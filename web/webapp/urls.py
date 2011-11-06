@@ -5,7 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^users/$', 'beer.views.user_index'),
+    (r'^users/$', 'beer.views.user_list'),
     (r'^users/(?P<user_id>\d+)/$', 'beer.views.user_detail'),
 
     # Examples:

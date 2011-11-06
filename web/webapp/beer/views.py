@@ -2,9 +2,9 @@ from django.template import Context, loader
 from django.http import HttpResponse
 from beer.models import User
 
-def user_index(request):
+def user_list(request):
     user_list = User.objects.all()
-    t = loader.get_template('user_index.html')
+    t = loader.get_template('user_list.html')
     c = Context({
         'user_list': user_list,
     })
