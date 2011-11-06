@@ -1,3 +1,4 @@
+
 // RFID reader ID-20 for Arduino 
 //
 // Based on code by BARRAGAN <http://people.interaction-ivrea.it/h.barragan> 
@@ -26,22 +27,35 @@
  * 11 5V  - +5V
  * 
  */
+ 
+//--- Includes
+#include <Time.h>
 
 //--- Digital Pins
 #define rfid         0
 #define tap1solenoid 6
 #define tap2solenoid 7
 
+//--- Constants
+#define TAP_DELAY 10
+
+void openTaps() {
+  digitalWrite(tap1solenoid, HIGH);
+  digitalWrite(tap2solenoid, HIGH);
+}
+
+void closeTaps() {
+  digitalWrite(tap1solenoid, LOW);
+  digitalWrite(tap2solenoid, LOW);
+}
 
 void setup() {
   Serial.begin(9600);                                 // connect to the serial port
 
   //--- Set up Solenoid Valves
   pinMode(tap1solenoid, OUTPUT);
-  digitalWrite(tap1solenoid, LOW);
   pinMode(tap2solenoid, OUTPUT);
-  digitalWrite(tap2solenoid, LOW);
-
+  closeTaps();
 }
 
 void loop () {
@@ -51,6 +65,8 @@ void loop () {
   byte checksum = 0;
   byte bytesread = 0;
   byte tempbyte = 0;
+  
+  time_t startTap = 0;
 
   if(Serial.available() > 0) {
     if((val = Serial.read()) == 2) {                  // check for header 
@@ -103,16 +119,17 @@ void loop () {
         Serial.println();
         
         //--- Turn on Taps
-        digitalWrite(tap1solenoid, HIGH);
-        digitalWrite(tap2solenoid, HIGH);
+        startTap = now();
+        openTaps();
       }
 
       bytesread = 0;
-      
-      //--- Turn off Taps
-      delay(1000);
-      digitalWrite(tap1solenoid, LOW);
-      digitalWrite(tap2solenoid, LOW);
     }
+  }
+  
+  //--- Turn off Taps
+  if (now() - startTap >= TAP_DELAY) {
+    closeTaps();
+    startTap = 0;
   }
 }
