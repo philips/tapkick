@@ -15,17 +15,17 @@ class Beer(models.Model):
     tap_number = models.IntegerField(choices=NUMBER_OF_TAP)
     active = models.BooleanField()
 
+class User(models.Model):
+    rfid = models.CharField("RFID", max_length=20)
+    name = models.CharField(max_length=255)
+
 class Access(models.Model):
     time = models.DateTimeField()
     amount = models.IntegerField()
+    user = models.ForeignKey(User)
     beer = models.ForeignKey(Beer)
 
     class Meta:
         ordering = ["time"]
         verbose_name_plural = "Accesses"
-
-class User(models.Model):
-    rfid = models.CharField("RFID", max_length=20)
-    name = models.CharField(max_length=255)
-    last_access = models.ForeignKey(Access)
 
