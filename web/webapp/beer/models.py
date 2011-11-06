@@ -7,11 +7,12 @@ NUMBER_OF_TAP = (
 )
 
 class Beer(models.Model):
-    type = models.CharField(max_length=2, choices=TYPE_OF_BEER)
+    type = models.CharField(max_length=3, choices=TYPE_OF_BEER)
     name = models.CharField(max_length=255)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     size = models.FloatField("Size (in liters)", default=29.33)
+    amount_left = models.FloatField("Amount left (in liters)", default=29.33)
     tap_number = models.IntegerField(choices=NUMBER_OF_TAP)
     active = models.BooleanField()
 
