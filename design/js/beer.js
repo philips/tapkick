@@ -38,7 +38,7 @@ function setLevel(tapNumber, level) {
 	y = -40;
 	x = -4000;
 	
-	if (level > 0 && level <= 100) {
+	if (level >= 0 && level <= 100) {
 		x = -3058-((round5(level)/5-1)*-160);
 		//x = level;
 	} else {
