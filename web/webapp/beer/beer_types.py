@@ -1,4 +1,4 @@
-TYPE_OF_BEER = (
+BEER_TYPE_CHOICES = (
     ('alt', 'Altbier'),
     ('amb', 'Amber ale'),
     ('bar', 'Barley wine'),
