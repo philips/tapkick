@@ -1,0 +1,173 @@
+body {
+	padding: 0px;
+	margin: 0px;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	background: url(../img/bgnoise_lg.png) top left repeat;
+}
+
+a {
+	color: #333;
+}
+
+#header {
+	background-color: #333;
+	background-image: url(../img/logo.png), url(../img/gradient.png);
+	background-position: center center,top left;
+	background-repeat: no-repeat, repeat-x;
+	height: 71px;
+	position: relative;
+}
+
+#header ul {
+	position: absolute;
+	top: 27px;
+	left: 40px;
+	padding: 0px;
+	margin: 0px;
+}
+
+#header ul li {
+	list-style: none;
+	margin: 0px;
+	padding: 0 40px 0 0px;
+	float: left;
+}
+
+#header ul li a {
+	color: #f5f5f5;
+	text-decoration: none;
+}
+
+#container {
+	width: 960px;
+	margin: 100px auto 0 auto;
+}
+
+.tap {
+	width: 400px;
+	margin: 0 40px;
+	float: left;
+}
+
+.box {
+	width: 394px;
+	height: 317px;
+	background: url(../img/box.png) top left no-repeat;
+	padding: 10px 30px;
+	position: relative;
+	color: #f5f5f5;
+}
+
+.box .logo {
+	position: absolute;
+	top: -60px;
+	left: -60px;
+	z-index: 110;
+}
+
+.box .tank {
+	width: 185px;
+	position: absolute;
+	top: 30px;
+	left: 35px;
+}
+
+.box .tank .tank-shell {
+	background: url(../img/tank.png) top left no-repeat;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 262px;
+	width: 140px;
+	z-index: 100;
+}
+
+.box .tank .tank-level {
+	background-image: url(../img/levels.png);
+	background-position: -18px -40px;
+	background-repeat: no-repeat;
+	position: absolute;
+	top: 17px;
+	left: -4px;
+	height: 262px;
+	width: 140px;
+	z-index: 90;
+}
+
+.box .meta {
+	position: absolute;
+	top: 20px;
+	left: 205px;
+	width: 140px;
+	margin-top: 20px;
+}
+
+.box .meta h2 {
+	margin-bottom: 8px;
+}
+
+.box .meta .item {
+	width: 140px;
+}
+
+.box .meta .item-key {
+	color: #ccc;
+	font-weight: 100;
+	float: left;
+	width: 50%;
+	line-height: 24px;
+}
+
+.box .meta .item-value {
+	color: #fff;
+	float: left;
+	width: 50%;
+	line-height: 24px;
+}
+
+.chart {
+	padding: 0 45px;
+}
+
+.chart-desc {
+	padding: 0 45px;
+	margin-bottom: 30px;
+	font-weight: 200;
+	color: #777;
+	margin-top: 5px;
+}
+
+.person {
+	padding: 0 45px;
+	margin-bottom: 30px;
+}
+
+.person img {
+	float: left;
+	margin-right: 10px;
+}
+
+.person h3 {
+	margin: 2px 0 5px 10px;
+	float: left;
+	width: 220px;
+	font-size: 16px;
+}
+
+.person p {
+	margin: 0 0 0 10px;
+	float: left;
+	width: 220px;
+	font-weight: 400;
+	font-weight: 13px;
+	color: #555;
+}
+
+.person .detail {
+	padding-left: 5px;
+}
+
+.clear {
+	clear: both;
+}
