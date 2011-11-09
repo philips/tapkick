@@ -1,0 +1,123 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" media="screen" href="{{ STATIC_URL }}css/style.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}js/beer.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}js/jquery.sparkline.js" type="text/javascript"></script>
+</head>
+<body>
+	<div id="header">
+		<ul id="nav">
+			<li><a href="#">Home</a></li>
+			<li><a href="#">SecondLink</a></li>
+		</ul>
+		<div id="login">
+			<a href="#"></a>
+		</div>
+	</div>
+	<div id="container">
+		<div id="one" class="tap">
+			<div class="box">
+				<div class="logo">
+					<img src="{{ STATIC_URL }}img/logo_pbr.png">
+				</div>
+				<div class="tank">
+					<div class="tank-shell">&nbsp;</div>
+					<div class="tank-level">&nbsp;</div>
+				</div>
+				<div class="meta">
+					<img src="{{ STATIC_URL }}img/one.png">
+					<h2>300 beers left</h2>
+					<div class="item">
+						<div class="item-key">Age:</div>
+						<div class="item-value">24 days</div>
+					</div>
+					<div class="item">
+						<div class="item-key">Temp:</div>
+						<div class="item-value">44&deg;F</div>
+					</div>
+					<div class="item">
+						<div class="item-key">Vol:</div>
+						<div class="item-value">23 Gal</div>
+					</div>
+				</div>
+			</div>
+			<div class="chart"></div>
+			<div class="chart-desc">Consumption Trend (12 people)</div>
+			<div class="person">
+				<img src="{{ STATIC_URL }}img/profiles/{{ last_to_drink1.user.name }}.jpg">
+				<h3>{{ last_to_drink1.user.name }}</h3>
+				<p>Last to Drink<span class="detail">({{ last_to_drink1.time|timesince }} ago)</span></p>
+				<div class="clear"></div>
+			</div>
+            {% if highest_consumption1 %}
+            {% for person in highest_consumption1 %}
+			<div class="person">
+				<img src="{{ STATIC_URL }}img/profiles/{{ person.user__name }}.jpg">
+				<h3>{{ person.user__name }}</h3>
+				<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
+				<div class="clear"></div>
+			</div>
+            {% endfor %}
+            {% endif %}
+			<div class="person">
+				<img src="{{ STATIC_URL }}img/profiles/{{ fastest_beer1.user__name }}.jpg">
+				<h3>{{ fastest_beer1.user__name }}</h3>
+				<p>Fastest Beer<span class="detail">({{ fastest_beer1.time }})</span></p>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div id="two" class="tap">
+			<div class="box">
+				<div class="logo">
+					<img src="{{ STATIC_URL }}img/logo_pbr.png">
+				</div>
+				<div class="tank">
+					<div class="tank-shell">&nbsp;</div>
+					<div class="tank-level">&nbsp;</div>
+				</div>
+				<div class="meta">
+					<img src="{{ STATIC_URL }}img/two.png">
+					<h2>300 beers left</h2>
+					<div class="item">
+						<div class="item-key">Age:</div>
+						<div class="item-value">24 days</div>
+					</div>
+					<div class="item">
+						<div class="item-key">Temp:</div>
+						<div class="item-value">44&deg;F</div>
+					</div>
+					<div class="item">
+						<div class="item-key">Vol:</div>
+						<div class="item-value">23 Gal</div>
+					</div>
+				</div>
+			</div>
+			<div class="chart"></div>
+			<div class="chart-desc">Consumption Trend (12 people)</div>
+			<div class="person">
+				<img src="{{ STATIC_URL }}img/profiles/{{ last_to_drink2.user.name }}.jpg">
+				<h3>{{ last_to_drink2.user.name }}</h3>
+				<p>Last to Drink<span class="detail">({{ last_to_drink2.time|timesince }} ago)</span></p>
+				<div class="clear"></div>
+			</div>
+            {% if highest_consumption2 %}
+            {% for person in highest_consumption2 %}
+			<div class="person">
+				<img src="{{ STATIC_URL }}img/profiles/{{ person.user__name }}.jpg">
+				<h3>{{ person.user__name }}</h3>
+				<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
+				<div class="clear"></div>
+			</div>
+            {% endfor %}
+            {% endif %}
+			<div class="person">
+				<img src="{{ STATIC_URL }}img/profiles/{{ fastest_beer2.user__name }}.jpg">
+				<h3>{{ fastest_beer2.user__name }}</h3>
+				<p>Fastest Beer<span class="detail">({{ fastest_beer2.time }})</span></p>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
