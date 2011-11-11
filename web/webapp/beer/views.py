@@ -1,6 +1,7 @@
 from django.template import RequestContext, Context, loader
 from django.http import HttpResponse
 from django.db.models import Sum
+from datetime import timedelta
 from beer.models import User
 from beer.models import Access
 from beer.models import Beer
@@ -14,10 +15,7 @@ def user_list(request):
     return HttpResponse(t.render(c))
 
 def user_detail(request, user_id):
-    try:
-        user = User.objects.get(pk=user_id)
-    except User.DoesNotExist:
-        raise Http404
+    user = get_object_or_404(User, pk=user_id)
     t = loader.get_template('user_detail.html')
     c = Context({
         'rfid': user.rfid,
@@ -29,24 +27,14 @@ def front_page(request):
     tap1_beer = Beer.objects.get(tap_number=1, active=True)
     tap2_beer = Beer.objects.get(tap_number=2, active=True)
 
-    last_to_drink1 = Access.objects.filter(beer=tap1_beer).order_by('-time')[0]
-    last_to_drink2 = Access.objects.filter(beer=tap2_beer).order_by('-time')[0]
+    last_to_drink1 = get_last_to_drink(tap1_beer)
+    last_to_drink2 = get_last_to_drink(tap2_beer)
     
-    user_amount1 = Access.objects.filter(beer=tap1_beer).values('user',
-        'user__name').order_by('user').annotate(total=Sum('amount')).order_by('-total')
-    user_amount2 = Access.objects.filter(beer=tap2_beer).values('user', 
-        'user__name').order_by('user').annotate(total=Sum('amount')).order_by('-total')
+    highest_consumption1 = get_highest_consumption(tap1_beer)
+    highest_consumption2 = get_highest_consumption(tap2_beer)
 
-    highest_consumption1 = get_highest_consumption(user_amount1)
-    highest_consumption2 = get_highest_consumption(user_amount2)
-
-    user_time1 = Access.objects.filter(beer=tap1_beer).values('user', 
-        'user__name', 'time').order_by('user', '-time')
-    user_time2 = Access.objects.filter(beer=tap2_beer).values('user', 
-        'user__name', 'time').order_by('user', '-time')
-
-    fastest_beer1 = get_fastest_beer(user_time1)
-    fastest_beer2 = get_fastest_beer(user_time2)
+    fastest_beer1 = get_fastest_beer(tap1_beer)
+    fastest_beer2 = get_fastest_beer(tap2_beer)
 
     t = loader.get_template('index.html')
     c = RequestContext(request, {
@@ -61,7 +49,17 @@ def front_page(request):
     })
     return HttpResponse(t.render(c))
 
-def get_highest_consumption(user_amount):
+def get_last_to_drink(tap_beer):
+    accesses = Access.objects.filter(beer=tap_beer).order_by('-time')
+    if len(accesses) == 0:
+        return None
+    else:
+        return accesses[0] 
+    
+
+def get_highest_consumption(tap_beer):
+    user_amount = Access.objects.filter(beer=tap_beer).values('user',
+        'user__name').order_by('user').annotate(total=Sum('amount')).order_by('-total')
     highest_consumption = []
     max_amount = 0
     
@@ -72,24 +70,35 @@ def get_highest_consumption(user_amount):
         else:
             break
 
-    return highest_consumption
+    if len(highest_consumption) == 0:
+        return None
+    else:
+        return highest_consumption
 
-def get_fastest_beer(user_time):
+
+def get_fastest_beer(tap_beer):
+    user_time = Access.objects.filter(beer=tap_beer).values('user', 
+        'user__name', 'time').order_by('user', '-time')
     user_accesses = []
     current_user = 0
-    done_flg = True
+    min_dif = timedelta.max.seconds
 
     for access in user_time:
         if not current_user == access['user']:
-            done_flg = False
             current_user = access['user']
-            latest_time = access['time']
-        elif current_user == access['user'] and not done_flg:
-            time = latest_time - access['time']
-            user_accesses.append({'user': access['user'], 'user__name': access['user__name'],
-                'time': time})
-            done_flg = True
+            prev_time = access['time']
+        else:
+            dif = (prev_time - access['time']).seconds
+            if min_dif > dif:
+                min_dif = dif
+                time = '%s min %s sec' % (dif / 60, dif % 60)
+                user_accesses.append({'user': access['user'], 
+                    'user__name': access['user__name'], 'time': time, 'dif': dif})
+            else:
+                prev_time = access['time']
 
-    return sorted(user_accesses, key=lambda access: access['time'])[0]
-        
+    if len(user_accesses) == 0:
+        return None
+    else:
+        return sorted(user_accesses, key=lambda access: access['dif'])[0]
 
