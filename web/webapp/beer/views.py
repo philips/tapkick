@@ -51,10 +51,10 @@ def front_page(request):
 
 def get_last_to_drink(tap_beer):
     accesses = Access.objects.filter(beer=tap_beer).order_by('-time')
-    if len(accesses) == 0:
-        return None
+    if accesses:
+        return accesses[0]
     else:
-        return accesses[0] 
+        return None
     
 
 def get_highest_consumption(tap_beer):
@@ -70,10 +70,10 @@ def get_highest_consumption(tap_beer):
         else:
             break
 
-    if len(highest_consumption) == 0:
-        return None
-    else:
+    if highest_consumption:
         return highest_consumption
+    else:
+        return None
 
 
 def get_fastest_beer(tap_beer):
@@ -97,8 +97,8 @@ def get_fastest_beer(tap_beer):
             else:
                 prev_time = access['time']
 
-    if len(user_accesses) == 0:
-        return None
-    else:
+    if user_accesses:
         return sorted(user_accesses, key=lambda access: access['dif'])[0]
+    else:
+        return None
 
