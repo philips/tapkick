@@ -205,9 +205,8 @@ void loop () {
     //--- Print out the data for the access period
     for (int i=0; i<5; i++) {
       Serial.print(lastcode[i], HEX);
-      Serial.print(" ");
     }
-    Serial.print(": ");
+    Serial.print(":");
     Serial.print(flow1);
     Serial.print("/");
     Serial.print(flow2);
