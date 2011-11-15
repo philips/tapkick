@@ -47,6 +47,9 @@ OneWire ds1(temp1);
 
 //--- Globals
 time_t startTap = 0;
+byte lastcode[6];
+float flow1 = 0.0;
+float flow2 = 0.0;
 
 //--- Functions
 void openTaps() {
@@ -57,6 +60,16 @@ void openTaps() {
 void closeTaps() {
   digitalWrite(tap1solenoid, LOW);
   digitalWrite(tap2solenoid, LOW);
+}
+
+void resetFlow() {
+  flow1 = 0.0;
+  flow2 = 0.0;
+}
+
+void addFlow() {
+  flow1 += 1.0;
+  flow2 += 1.0;
 }
 
 float getTemp(OneWire ds){
@@ -161,18 +174,9 @@ void loop () {
       // Output to Serial:
 
       if (bytesread == 12) {                          // if 12 digit read is complete
-        Serial.print("5-byte code: ");
         for (i=0; i<5; i++) {
-          if (code[i] < 16) Serial.print("0");
-          Serial.print(code[i], HEX);
-          Serial.print(" ");
+          lastcode[i] = code[i];
         }
-        Serial.println();
-
-        Serial.print("Checksum: ");
-        Serial.print(code[5], HEX);
-        Serial.println(code[5] == checksum ? " -- passed." : " -- error.");
-        Serial.println();
         
         //--- Turn on Taps
         startTap = now();
@@ -185,11 +189,35 @@ void loop () {
   
   //--- Turn off Taps
   if(startTap > 0 and (now() - startTap >= TAP_DELAY)) {
+    //--- Close the taps
     closeTaps();
+
+    //--- Get the temperature in Celcius
+    float temperature1 = getTemp(ds1);
+
+    //--- Print out the data for the access period
+    for (i=0; i<5; i++) {
+      Serial.print(lastcode[i], HEX);
+      Serial.print(" ");
+    }
+    Serial.print(": ");
+    Serial.print(flow1);
+    Serial.print("/");
+    Serial.print(flow2);
+    Serial.print("/");
+    Serial.print(temperature1);
+    Serial.println();
+    
+    //--- Reset the tap start time
     startTap = 0;
+    
+    //--- Reset the flow now that you've printed it
+    resetFlow();
+  } else {
+    addFlow();
   }
 
-  //--- Get the temperature
-  float temperature1 = getTemp(ds1);
+  
+  
 
 }
