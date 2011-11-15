@@ -1,19 +1,8 @@
-
-// RFID reader ID-20 for Arduino 
-//
-// Based on code by BARRAGAN <http://people.interaction-ivrea.it/h.barragan> 
-// and code from HC Gilje - http://hcgilje.wordpress.com/resources/rfid_id12_tagreader/
-// Modified for Arudino by djmatic
-// Modified for ID-12 and checksum by Martijn The - http://www.martijnthe.nl/
-//
-// Use the drawings from HC Gilje to wire up the ID-12.
-// Remark: disconnect the rx serial wire to the ID-12 when uploading the sketch
-// Source: http://www.arduino.cc/playground/Code/ID12
-
 /*
  * Innovations ID-20 Pin-outs
+ * http://www.sparkfun.com/products/8628
  * http://www.sparkfun.com/datasheets/Sensors/ID-12-Datasheet.pdf
- * 
+ *
  *  1 GND - GND
  *  2 RST - +5V
  *  3 ANT - None
@@ -25,9 +14,47 @@
  *  9 D0  - RX Pin D0 on Arduino
  * 10 BZ  - 1Kohm resistor -> LED -> GND
  * 11 5V  - +5V
- * 
+ *
  */
- 
+
+/*
+ * DS18B20 One Wire Digital Temperature Sensor
+ * http://www.sparkfun.com/products/245
+ * http://datasheets.maxim-ic.com/en/ds/DS18B20.pdf
+ *
+ * With flat side facing you pins are read 1, 2, 3
+ *
+ *  1 GND    - GND
+ *  2 RX Pin - Pins 10, 11 on Arduino
+ *  3 VCC    - +5V
+ *
+ * Also connect a 4.7kOhm resistor between pin 2 and VCC
+ *
+ */
+
+/*
+ * Solid State Relay Kit
+ * http://www.sparkfun.com/products/10684
+ *
+ * Pins are labelled:
+ *
+ * GND  - GND
+ * CTRL - Pins 6, 7 on Arduino
+ * 5V   - +5V
+ *
+ * The Absolute Maximum Load: 125VAC @ 8A
+ *
+ * Connect hot wire through load pins.  The relay does
+ * not provide power, you must supply your own AC power.
+ *
+ */
+
+/*
+ * Flow sensors
+ * TBD
+ *
+ */
+
 //--- Includes
 #include <OneWire.h>
 #include <Time.h>
@@ -124,6 +151,17 @@ float getTemp(OneWire ds){
 }
 
 void getRFID() {
+  // RFID reader ID-20 for Arduino
+  //
+  // Based on code by BARRAGAN <http://people.interaction-ivrea.it/h.barragan>
+  // and code from HC Gilje - http://hcgilje.wordpress.com/resources/rfid_id12_tagreader/
+  // Modified for Arudino by djmatic
+  // Modified for ID-12 and checksum by Martijn The - http://www.martijnthe.nl/
+  //
+  // Use the drawings from HC Gilje to wire up the ID-12.
+  // Remark: disconnect the rx serial wire to the ID-12 when uploading the sketch
+  // Source: http://www.arduino.cc/playground/Code/ID12
+
   byte val = 0;
   byte code[6];
   byte checksum = 0;
