@@ -57,7 +57,8 @@ void closeTaps() {
 }
 
 float getTemp(OneWire ds){
-  //returns the temperature from one DS18S20 in DEG Celsius
+  // from http://bildr.org/2011/07/ds18b20-arduino/
+  // returns the temperature from one DS18S20 in DEG Celsius
 
   byte data[12];
   byte addr[8];
