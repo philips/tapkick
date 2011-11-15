@@ -40,10 +40,13 @@
 #define temp2        11 // DS18B20 Transistor
 
 //--- Constants
-#define TAP_DELAY 10
+#define TAP_DELAY 5
 
 //--- Instantiate Class Objects
 OneWire ds1(temp1);
+
+//--- Globals
+time_t startTap = 0;
 
 //--- Functions
 void openTaps() {
@@ -120,8 +123,6 @@ void loop () {
   byte checksum = 0;
   byte bytesread = 0;
   byte tempbyte = 0;
-  
-  time_t startTap = 0;
 
   if(Serial.available() > 0) {
     if((val = Serial.read()) == 2) {                  // check for header 
@@ -183,11 +184,10 @@ void loop () {
   }
   
   //--- Turn off Taps
-  if (now() - startTap >= TAP_DELAY) {
+  if(startTap > 0 and (now() - startTap >= TAP_DELAY)) {
     closeTaps();
     startTap = 0;
   }
-
 
   //--- Get the temperature
   float temperature1 = getTemp(ds1);
