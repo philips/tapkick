@@ -44,6 +44,7 @@
 
 //--- Instantiate Class Objects
 OneWire ds1(temp1);
+OneWire ds2(temp2);
 
 //--- Globals
 time_t startTap = 0;
@@ -53,11 +54,13 @@ float flow2 = 0.0;
 
 //--- Functions
 void openTaps() {
+  startTap = now();
   digitalWrite(tap1solenoid, HIGH);
   digitalWrite(tap2solenoid, HIGH);
 }
 
 void closeTaps() {
+  startTap = 0;
   digitalWrite(tap1solenoid, LOW);
   digitalWrite(tap2solenoid, LOW);
 }
@@ -120,17 +123,7 @@ float getTemp(OneWire ds){
 
 }
 
-void setup() {
-  Serial.begin(9600);                                 // connect to the serial port
-
-  //--- Set up Solenoid Valves
-  pinMode(tap1solenoid, OUTPUT);
-  pinMode(tap2solenoid, OUTPUT);
-  closeTaps();
-}
-
-void loop () {
-  byte i = 0;
+void getRFID() {
   byte val = 0;
   byte code[6];
   byte checksum = 0;
@@ -174,19 +167,32 @@ void loop () {
       // Output to Serial:
 
       if (bytesread == 12) {                          // if 12 digit read is complete
-        for (i=0; i<5; i++) {
+        for (int i=0; i<5; i++) {
           lastcode[i] = code[i];
         }
         
         //--- Turn on Taps
-        startTap = now();
         openTaps();
       }
 
       bytesread = 0;
     }
   }
-  
+}
+
+void setup() {
+  Serial.begin(9600);                                 // connect to the serial port
+
+  //--- Set up Solenoid Valves
+  pinMode(tap1solenoid, OUTPUT);
+  pinMode(tap2solenoid, OUTPUT);
+  closeTaps();
+}
+
+void loop () {
+
+  getRFID();
+
   //--- Turn off Taps
   if(startTap > 0 and (now() - startTap >= TAP_DELAY)) {
     //--- Close the taps
@@ -194,9 +200,10 @@ void loop () {
 
     //--- Get the temperature in Celcius
     float temperature1 = getTemp(ds1);
+    float temperature2 = getTemp(ds2);
 
     //--- Print out the data for the access period
-    for (i=0; i<5; i++) {
+    for (int i=0; i<5; i++) {
       Serial.print(lastcode[i], HEX);
       Serial.print(" ");
     }
@@ -206,18 +213,14 @@ void loop () {
     Serial.print(flow2);
     Serial.print("/");
     Serial.print(temperature1);
+    Serial.print("/");
+    Serial.print(temperature2);
     Serial.println();
-    
-    //--- Reset the tap start time
-    startTap = 0;
     
     //--- Reset the flow now that you've printed it
     resetFlow();
   } else {
     addFlow();
   }
-
-  
-  
 
 }
