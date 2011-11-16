@@ -11,7 +11,7 @@
  *  6 NC  - None
  *  7 FS  - GND
  *  8 D1  - None
- *  9 D0  - RX Pin D0 on Arduino
+ *  9 D0  - RX Pin D19 on Arduino
  * 10 BZ  - 1Kohm resistor -> LED -> GND
  * 11 5V  - +5V
  *
@@ -60,11 +60,11 @@
 #include <Time.h>
 
 //--- Digital Pins
-#define rfid         0
 #define tap1solenoid 6
 #define tap2solenoid 7
 #define temp1        10 // DS18B20 Transistor
 #define temp2        11 // DS18B20 Transistor
+#define rfid         19
 
 //--- Constants
 #define TAP_DELAY 5
@@ -116,12 +116,12 @@ float getTemp(OneWire ds){
   }
 
   if ( OneWire::crc8( addr, 7) != addr[7]) {
-    Serial.println("CRC is not valid!");
+    Serial1.println("CRC is not valid!");
     return -1000;
   }
 
   if ( addr[0] != 0x10 && addr[0] != 0x28) {
-    Serial.print("Device is not recognized");
+    Serial1.print("Device is not recognized");
     return -1000;
   }
 
@@ -168,12 +168,12 @@ void getRFID() {
   byte bytesread = 0;
   byte tempbyte = 0;
 
-  if(Serial.available() > 0) {
-    if((val = Serial.read()) == 2) {                  // check for header 
+  if(Serial1.available() > 0) {
+    if((val = Serial1.read()) == 2) {                  // check for header
       bytesread = 0; 
       while (bytesread < 12) {                        // read 10 digit code + 2 digit checksum
-        if( Serial.available() > 0) { 
-          val = Serial.read();
+        if( Serial1.available() > 0) {
+          val = Serial1.read();
           if((val == 0x0D)||(val == 0x0A)||(val == 0x03)||(val == 0x02)) { // if header or stop bytes before the 10 digit reading 
             break;                                    // stop reading
           }
@@ -202,7 +202,7 @@ void getRFID() {
         } 
       } 
 
-      // Output to Serial:
+      // Output to Serial1:
 
       if (bytesread == 12) {                          // if 12 digit read is complete
         for (int i=0; i<5; i++) {
@@ -220,6 +220,7 @@ void getRFID() {
 
 void setup() {
   Serial.begin(9600);                                 // connect to the serial port
+  Serial1.begin(9600);                                // connect to the rfid
 
   //--- Set up Solenoid Valves
   pinMode(tap1solenoid, OUTPUT);
