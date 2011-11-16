@@ -11,7 +11,7 @@
  *  6 NC  - None
  *  7 FS  - GND
  *  8 D1  - None
- *  9 D0  - RX Pin D19 on Arduino
+ *  9 D0  - RX1 Pin D19 on Arduino
  * 10 BZ  - 1Kohm resistor -> LED -> GND
  * 11 5V  - +5V
  *
@@ -25,7 +25,7 @@
  * With flat side facing you pins are read 1, 2, 3
  *
  *  1 GND    - GND
- *  2 RX Pin - Pins 10, 11 on Arduino
+ *  2 RX Pin - Pins D10, D11 on Arduino
  *  3 VCC    - +5V
  *
  * Also connect a 4.7kOhm resistor between pin 2 and VCC
@@ -39,13 +39,23 @@
  * Pins are labelled:
  *
  * GND  - GND
- * CTRL - Pins 6, 7 on Arduino
+ * CTRL - Pins D6, D7 on Arduino
  * 5V   - +5V
  *
  * The Absolute Maximum Load: 125VAC @ 8A
  *
  * Connect hot wire through load pins.  The relay does
  * not provide power, you must supply your own AC power.
+ *
+ */
+
+/*
+ * Serial Enabled 20x4 LCD - Black on Green 5V
+ * http://www.sparkfun.com/products/9568
+ *
+ * RX  - Pin A2 on Arduino
+ * GND - GND
+ * VDD - +5V
  *
  */
 
