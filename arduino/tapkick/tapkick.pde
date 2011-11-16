@@ -53,7 +53,7 @@
  * Serial Enabled 20x4 LCD - Black on Green 5V
  * http://www.sparkfun.com/products/9568
  *
- * RX  - Pin A2 on Arduino
+ * RX  - Pin D2 on Arduino
  * GND - GND
  * VDD - +5V
  *
@@ -72,9 +72,10 @@
 #include <Time.h>
 
 //--- Analog Pins
-#define lcdPin       2
+// None
 
 //--- Digital Pins
+#define lcdPin       2
 #define tap1solenoid 6
 #define tap2solenoid 7
 #define temp1        10 // DS18B20 Transistor
@@ -253,14 +254,14 @@ void loop () {
 
   getRFID();
 
+  //--- Get the temperature in Celcius
+  float temperature1 = getTemp(ds1);
+  float temperature2 = getTemp(ds2);
+
   //--- Turn off Taps
   if(startTap > 0 and (now() - startTap >= TAP_DELAY)) {
     //--- Close the taps
     closeTaps();
-
-    //--- Get the temperature in Celcius
-    float temperature1 = getTemp(ds1);
-    float temperature2 = getTemp(ds2);
 
     //--- Print out the data for the access period
     for (int i=0; i<5; i++) {
@@ -282,13 +283,15 @@ void loop () {
     addFlow();
   }
 
-  lcd.at(1,2,"LCD Test 1");
-  lcd.at(2,2,"LCD Test 2");
-  lcd.at(3,2,"LCD Test 3");
-  lcd.at(4,2,"LCD Test 4");
-  lcd.off();
-  delay(1000);
-  lcd.on();
+  lcd.at(1,1,"Temp1:");
+  lcd.at(1,7,int(temperature1));
+  lcd.at(1,9,"C");
+  lcd.at(1,11,"Temp2:");
+  lcd.at(1,17,int(temperature2));
+  lcd.at(1,19,"C");
+  lcd.at(2,2,"LCD Tapkick Test 2");
+  lcd.at(3,2,"LCD Tapkick Test 3");
+  lcd.at(4,2,"LCD Tapkick Test 4");
   delay(1000);
   lcd.empty();
 }
