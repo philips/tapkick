@@ -57,7 +57,12 @@
 
 //--- Includes
 #include <OneWire.h>
+#include "SoftwareSerial.h"
+#include "SparkFunSerLCD.h"
 #include <Time.h>
+
+//--- Analog Pins
+#define lcdPin       2
 
 //--- Digital Pins
 #define tap1solenoid 6
@@ -68,10 +73,13 @@
 
 //--- Constants
 #define TAP_DELAY 5
+#define LCD_ROWS 4
+#define LCD_COLS 20
 
 //--- Instantiate Class Objects
 OneWire ds1(temp1);
 OneWire ds2(temp2);
+SparkFunSerLCD lcd(lcdPin, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 
 //--- Globals
 time_t startTap = 0;
@@ -226,6 +234,9 @@ void setup() {
   pinMode(tap1solenoid, OUTPUT);
   pinMode(tap2solenoid, OUTPUT);
   closeTaps();
+
+  //--- Set up the LCD
+  lcd.setup();
 }
 
 void loop () {
@@ -261,4 +272,13 @@ void loop () {
     addFlow();
   }
 
+  lcd.at(1,2,"LCD Test 1");
+  lcd.at(2,2,"LCD Test 2");
+  lcd.at(3,2,"LCD Test 3");
+  lcd.at(4,2,"LCD Test 4");
+  lcd.off();
+  delay(1000);
+  lcd.on();
+  delay(1000);
+  lcd.empty();
 }
