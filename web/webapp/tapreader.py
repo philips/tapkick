@@ -1,15 +1,16 @@
-#! /usr/local/bin/python
-
 import datetime
 import glob
 import optparse
-import os.path
+import os
 import sys
 import time
 
 import serial
 
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
 from beer.models import Beer, Access, User
+
 
 def scanports():
     return glob.glob('/dev/tty*')
