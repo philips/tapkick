@@ -6,10 +6,11 @@ TAP_NUMBER_CHOICES = (
     (2, 'Tap number 2'),
 )
 
+
 class Beer(models.Model):
     beer_type = models.CharField(max_length=3, choices=BEER_TYPE_CHOICES)
     name = models.CharField(max_length=255)
-    start_date = models.DateTimeField()
+    start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     size = models.FloatField("Size (in liters)", default=29.33)
     amount_left = models.FloatField("Amount left (in liters)", default=29.33)
@@ -25,7 +26,8 @@ class Beer(models.Model):
     12 ounce cups left.
     """
     def cups_left(self):
-        return round((self.amount_left * 33.8140227)/12)
+        return round((self.amount_left * 33.8140227) / 12)
+
 
 class User(models.Model):
     rfid = models.CharField("RFID", max_length=20)
@@ -33,6 +35,7 @@ class User(models.Model):
 
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.rfid)
+
 
 class Access(models.Model):
     time = models.DateTimeField()

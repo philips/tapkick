@@ -1,9 +1,10 @@
 from django.template import RequestContext, Context, loader
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.db.models import Sum
 from beer.models import User
 from beer.models import Access
 from beer.models import Beer
+
 
 def user_list(request):
     user_list = User.objects.all()
@@ -12,6 +13,7 @@ def user_list(request):
         'user_list': user_list,
     })
     return HttpResponse(t.render(c))
+
 
 def user_detail(request, user_id):
     try:
@@ -25,24 +27,32 @@ def user_detail(request, user_id):
     })
     return HttpResponse(t.render(c))
 
-def front_page(request):
-    tap1_beer = Beer.objects.get(tap_number=1, active=True)
-    tap2_beer = Beer.objects.get(tap_number=2, active=True)
 
-    last_to_drink1 = Access.objects.filter(beer=tap1_beer).order_by('-time')[0]
-    last_to_drink2 = Access.objects.filter(beer=tap2_beer).order_by('-time')[0]
-    
+def front_page(request):
+    tap1_beer, c1 = Beer.objects.get_or_create(tap_number=1, active=True)
+    tap2_beer, c3 = Beer.objects.get_or_create(tap_number=2, active=True)
+
+    last_to_drink1 = None
+    last_to_drink2 = None
+
+    drinker_list_tap1 = Access.objects.filter(beer=tap1_beer).order_by('-time')
+    if drinker_list_tap1:
+        last_to_drink1 = drinker_list_tap1[0]
+    drinker_list_tap2 = Access.objects.filter(beer=tap2_beer).order_by('-time')
+    if drinker_list_tap2:
+        last_to_drink2 = drinker_list_tap2[0]
+
     user_amount1 = Access.objects.filter(beer=tap1_beer).values('user',
         'user__name').order_by('user').annotate(total=Sum('amount')).order_by('-total')
-    user_amount2 = Access.objects.filter(beer=tap2_beer).values('user', 
+    user_amount2 = Access.objects.filter(beer=tap2_beer).values('user',
         'user__name').order_by('user').annotate(total=Sum('amount')).order_by('-total')
 
     highest_consumption1 = get_highest_consumption(user_amount1)
     highest_consumption2 = get_highest_consumption(user_amount2)
 
-    user_time1 = Access.objects.filter(beer=tap1_beer).values('user', 
+    user_time1 = Access.objects.filter(beer=tap1_beer).values('user',
         'user__name', 'time').order_by('user', '-time')
-    user_time2 = Access.objects.filter(beer=tap2_beer).values('user', 
+    user_time2 = Access.objects.filter(beer=tap2_beer).values('user',
         'user__name', 'time').order_by('user', '-time')
 
     fastest_beer1 = get_fastest_beer(user_time1)
@@ -61,10 +71,11 @@ def front_page(request):
     })
     return HttpResponse(t.render(c))
 
+
 def get_highest_consumption(user_amount):
     highest_consumption = []
     max_amount = 0
-    
+
     for amount in user_amount:
         if max_amount <= amount['total']:
             max_amount = amount['total']
@@ -73,6 +84,7 @@ def get_highest_consumption(user_amount):
             break
 
     return highest_consumption
+
 
 def get_fastest_beer(user_time):
     user_accesses = []
@@ -90,6 +102,7 @@ def get_fastest_beer(user_time):
                 'time': time})
             done_flg = True
 
-    return sorted(user_accesses, key=lambda access: access['time'])[0]
-        
-
+    access = sorted(user_accesses, key=lambda access: access['time'])
+    if access:
+        return access[0]
+    return None
