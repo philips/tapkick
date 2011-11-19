@@ -1,4 +1,8 @@
+import datetime
+
+from django.core.mail import send_mail
 from django.db import models
+
 from beer_types import BEER_TYPE_CHOICES
 
 TAP_NUMBER_CHOICES = (
@@ -6,13 +10,21 @@ TAP_NUMBER_CHOICES = (
     (2, 'Tap number 2'),
 )
 
+# Keg sizes from here:
+# http://en.wikipedia.org/wiki/Keg
+KEG_SIZE_CHOICES = (
+    (18.9, 'Sixth Barrel 18.9L'),
+    (29.33, 'Quarter Barrel 29.3L'),
+    (58.66, 'Half Barrel 58.66L'),
+)
+
 
 class Beer(models.Model):
     beer_type = models.CharField(max_length=3, choices=BEER_TYPE_CHOICES)
     name = models.CharField(max_length=255)
-    start_date = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateTimeField(default=datetime.datetime.now(), blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    size = models.FloatField("Size (in liters)", default=29.33)
+    size = models.FloatField("Size (in liters)", default=29.33, choices=KEG_SIZE_CHOICES)
     amount_left = models.FloatField("Amount left (in liters)", default=29.33)
     tap_number = models.IntegerField(choices=TAP_NUMBER_CHOICES)
     active = models.BooleanField(default=True)
@@ -31,14 +43,29 @@ class Beer(models.Model):
 
 class User(models.Model):
     rfid = models.CharField("RFID", max_length=20)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, default='Beer Lover')
+    email = models.EmailField(blank=True, null=True)
+    receive_alerts = models.BooleanField(default=True)
 
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.rfid)
 
+    @classmethod
+    def email_all_users(cls):
+        """
+        @TODO: A classmethod that emails all users
+        to alert when beer is low
+        """
+        user_email_list = cls.objects.filter(
+                receive_alerts=True, email__isnull=False).values_list('email', flat=True)
+        subject = 'Beer is almost empty'
+        message = 'Get more beer!'
+        from_email = 'tapkick@rackspace.com'  # @TODO: Put this in settings
+        send_mail(subject, message, from_email, user_email_list, fail_silently=True)
+
 
 class Access(models.Model):
-    time = models.DateTimeField()
+    time = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField()
     user = models.ForeignKey(User)
     beer = models.ForeignKey(Beer)
@@ -48,4 +75,4 @@ class Access(models.Model):
         verbose_name_plural = "Accesses"
 
     def __unicode__(self):
-        return u'%s, %s, %s, %s' % (self.user, self.time, self.beer, self.amount)
+        return u'%s, %s, %s, %s' % (self.time, self.user, self.beer, self.amount)
