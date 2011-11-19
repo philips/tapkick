@@ -35,7 +35,7 @@ if __name__ == '__main__':
                       metavar="BAUD")
     parser.add_option("-t", "--timeout",
                       dest="timeout",
-                      default=15,
+                      default=5,
                       type="int",
                       help="the serial connection TIMEOUT in seconds [default: %default]",
                       metavar="TIMEOUT")
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # Connect to serial port and wait for arduino reboot and startup
     try:
         ser = serial.Serial(PORT, BAUD, timeout=TIMEOUT)
-        time.sleep(10.0)
+        time.sleep(5.0)
     except serial.SerialException, e:
         print 'Serial connection could not be established:\n\t', e
         sys.exit()
@@ -101,20 +101,21 @@ if __name__ == '__main__':
                     if not min_temp < temp[i] < max_temp:
                         temp[i] = last_temp[i]
 
-                    # Print useful information
-                    print datetime.datetime.now(), rfid, flow, temp
+                # Print useful information
+                print datetime.datetime.now(), rfid, flow, temp
 
-                    # Get or Create the user for the system
-                    user, created = User.objects.get_or_create(rfid=rfid)
-                    if created:
-                        print 'Welcome to Tapkick user %s' % rfid
+                # Get or Create the user for the system
+                user, created = User.objects.get_or_create(rfid=rfid)
+                if created:
+                    print 'Welcome to Tapkick user %s' % rfid
 
-                    # @TODO: Choose beer based on flow data
-                    beer = Beer.objects.all()[0]
+                # @TODO: Choose beer based on flow data
+                beer = Beer.objects.all()[0]
 
-                    # Record access in the database
-                    access = Access(user=user, beer=beer, amount=flow[1])
-                    access.save()
+                # Record access in the database
+                access = Access(user=user, beer=beer, amount=flow[1])
+                access.save()
+
                 for i in xrange(0, 2):
                     last_temp[i] = temp[i]
 
