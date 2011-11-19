@@ -76,8 +76,7 @@
 
 //--- Digital Pins
 #define lcdPin       2
-#define tap1solenoid 6
-#define tap2solenoid 7
+#define power        7
 #define temp1        10 // DS18B20 Transistor
 #define temp2        11 // DS18B20 Transistor
 #define rfid         19
@@ -105,15 +104,13 @@ float temperature2 = 0.0;
 void openTaps() {
   tapState = true;
   startTap = now();
-  digitalWrite(tap1solenoid, HIGH);
-  digitalWrite(tap2solenoid, HIGH);
+  digitalWrite(power, HIGH);
 }
 
 void closeTaps() {
   tapState = false;
   startTap = now();
-  digitalWrite(tap1solenoid, LOW);
-  digitalWrite(tap2solenoid, LOW);
+  digitalWrite(power, LOW);
 }
 
 void resetFlow() {
@@ -262,9 +259,8 @@ void setup() {
   Serial.begin(9600);    // connect to the serial port
   Serial1.begin(9600);   // connect to the rfid
 
-  //--- Set up Solenoid Valves
-  pinMode(tap1solenoid, OUTPUT);
-  pinMode(tap2solenoid, OUTPUT);
+  //--- Set up Power
+  pinMode(power, OUTPUT);
   closeTaps();
 
   //--- Set up the LCD
