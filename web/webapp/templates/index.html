@@ -13,11 +13,12 @@
 			<div class="tank-level">&nbsp;</div>
 		</div>
 		<div class="meta">
-			<img src="{{ STATIC_URL }}img/one.png">
-			<h2>300 beers left</h2>
+            <img src="{{ STATIC_URL }}img/one.png">
+            <h2>{{tap1_beer.name}}</h2>
+            <h2>{{tap1_beer.cups_left}} beers left</h2>
 			<div class="item">
 				<div class="item-key">Age:</div>
-				<div class="item-value">24 days</div>
+                <div class="item-value">{{tap1_beer.start_date|timesince:now}}</div>
 			</div>
 			<div class="item">
 				<div class="item-key">Temp:</div>
@@ -25,7 +26,7 @@
 			</div>
 			<div class="item">
 				<div class="item-key">Vol:</div>
-				<div class="item-value">23 Gal</div>
+                <div class="item-value">{{tap1_beer.amount_left}} L</div>
 			</div>
 		</div>
 	</div>
@@ -69,10 +70,11 @@
 		</div>
 		<div class="meta">
 			<img src="{{ STATIC_URL }}img/two.png">
-			<h2>300 beers left</h2>
+            <h2>{{tap2_beer.name}}</h2>
+            <h2>{{tap2_beer.cups_left}} beers left</h2>
 			<div class="item">
 				<div class="item-key">Age:</div>
-				<div class="item-value">24 days</div>
+                <div class="item-value">{{tap2_beer.start_date|timesince:now}}</div>
 			</div>
 			<div class="item">
 				<div class="item-key">Temp:</div>
@@ -80,7 +82,7 @@
 			</div>
 			<div class="item">
 				<div class="item-key">Vol:</div>
-				<div class="item-value">23 Gal</div>
+                <div class="item-value">{{tap2_beer.amount_left}} L</div>
 			</div>
 		</div>
 	</div>

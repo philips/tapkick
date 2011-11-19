@@ -1,3 +1,5 @@
+import datetime
+
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import Http404
@@ -61,6 +63,7 @@ def front_page(request):
     fastest_beer2 = get_fastest_beer(user_time2)
 
     context = {
+        'now': datetime.datetime.now(),
         'tap1_beer': tap1_beer,
         'tap2_beer': tap2_beer,
         'last_to_drink1': last_to_drink1,

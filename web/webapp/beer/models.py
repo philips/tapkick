@@ -3,25 +3,17 @@ import datetime
 from django.core.mail import send_mail
 from django.db import models
 
-from beer_types import BEER_TYPE_CHOICES
+from beer_types import BEER_TYPE_CHOICES, KEG_SIZE_CHOICES
 
 TAP_NUMBER_CHOICES = (
     (1, 'Tap number 1'),
     (2, 'Tap number 2'),
 )
 
-# Keg sizes from here:
-# http://en.wikipedia.org/wiki/Keg
-KEG_SIZE_CHOICES = (
-    (18.9, 'Sixth Barrel 18.9L'),
-    (29.33, 'Quarter Barrel 29.3L'),
-    (58.66, 'Half Barrel 58.66L'),
-)
-
 
 class Beer(models.Model):
-    beer_type = models.CharField(max_length=3, choices=BEER_TYPE_CHOICES)
-    name = models.CharField(max_length=255)
+    beer_type = models.CharField(max_length=3, default='def', choices=BEER_TYPE_CHOICES)
+    name = models.CharField(max_length=255, default='New Beer')
     start_date = models.DateTimeField(default=datetime.datetime.now(), blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     size = models.FloatField("Size (in liters)", default=29.33, choices=KEG_SIZE_CHOICES)
@@ -30,7 +22,7 @@ class Beer(models.Model):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return u'%s, %s liters left, %s, %s' % (self.name, self.amount_left, self.start_date, self.get_tap_number_display())
+        return u'%s, %s' % (self.name, self.beer_type)
 
     """
     Return approximate number of cups left in this keg of beer.
@@ -38,7 +30,7 @@ class Beer(models.Model):
     12 ounce cups left.
     """
     def cups_left(self):
-        return round((self.amount_left * 33.8140227) / 12)
+        return int(round((self.amount_left * 33.8140227) / 12))
 
 
 class User(models.Model):
@@ -72,7 +64,7 @@ class Access(models.Model):
     beer = models.ForeignKey(Beer)
 
     class Meta:
-        ordering = ["time"]
+        ordering = ["-time"]
         verbose_name_plural = "Accesses"
 
     def __unicode__(self):

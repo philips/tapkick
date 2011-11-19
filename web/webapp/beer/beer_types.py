@@ -1,4 +1,16 @@
+
+# Keg sizes from here:
+# http://en.wikipedia.org/wiki/Keg
+KEG_SIZE_CHOICES = (
+    (18.9, 'Sixth Barrel 18.9L'),
+    (29.33, 'Quarter Barrel 29.3L'),
+    (58.66, 'Half Barrel 58.66L'),
+)
+
+# Beer sizes from here:
+# @TODO: Get reference
 BEER_TYPE_CHOICES = (
+    ('def', 'DEFAULT'),
     ('alt', 'Altbier'),
     ('amb', 'Amber ale'),
     ('bar', 'Barley wine'),
