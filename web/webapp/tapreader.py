@@ -90,7 +90,7 @@ if __name__ == '__main__':
             data = ser.readline().strip()
 
             if data:
-                user = data.split(':')[0]
+                rfid = data.split(':')[0]
                 data_list = data.split(':')[1].split('/')
                 data = ''
 
@@ -101,7 +101,20 @@ if __name__ == '__main__':
                     if not min_temp < temp[i] < max_temp:
                         temp[i] = last_temp[i]
 
-                    print datetime.datetime.now(), user, flow, temp
+                    # Print useful information
+                    print datetime.datetime.now(), rfid, flow, temp
+
+                    # Get or Create the user for the system
+                    user, created = User.objects.get_or_create(rfid=rfid)
+                    if created:
+                        print 'Welcome to Tapkick user %s' % rfid
+
+                    # @TODO: Choose beer based on flow data
+                    beer = Beer.objects.all()[0]
+
+                    # Record access in the database
+                    access = Access(user=user, beer=beer, amount=flow[1])
+                    access.save()
                 for i in xrange(0, 2):
                     last_temp[i] = temp[i]
 
