@@ -1,5 +1,6 @@
-from django.template import RequestContext, Context, loader
-from django.http import HttpResponse, Http404
+from django.template import RequestContext
+from django.shortcuts import render_to_response
+from django.http import Http404
 from django.db.models import Sum
 from beer.models import User
 from beer.models import Access
@@ -7,25 +8,26 @@ from beer.models import Beer
 
 
 def user_list(request):
-    user_list = User.objects.all()
-    t = loader.get_template('user_list.html')
-    c = Context({
+    user_list = User.objects.filter(private=False)
+    context = {
         'user_list': user_list,
-    })
-    return HttpResponse(t.render(c))
+    }
+    return render_to_response(
+            'user_list.html', context,
+            context_instance=RequestContext(request))
 
 
-def user_detail(request, user_id):
+def user_detail(request, rfid_id):
     try:
-        user = User.objects.get(pk=user_id)
+        user = User.objects.get(rfid=rfid_id)
     except User.DoesNotExist:
         raise Http404
-    t = loader.get_template('user_detail.html')
-    c = Context({
-        'rfid': user.rfid,
-        'name': user.name,
-    })
-    return HttpResponse(t.render(c))
+    context = {
+        'user': user,
+    }
+    return render_to_response(
+            'user_detail.html', context,
+            context_instance=RequestContext(request))
 
 
 def front_page(request):
@@ -58,8 +60,7 @@ def front_page(request):
     fastest_beer1 = get_fastest_beer(user_time1)
     fastest_beer2 = get_fastest_beer(user_time2)
 
-    t = loader.get_template('index.html')
-    c = RequestContext(request, {
+    context = {
         'tap1_beer': tap1_beer,
         'tap2_beer': tap2_beer,
         'last_to_drink1': last_to_drink1,
@@ -68,8 +69,10 @@ def front_page(request):
         'highest_consumption2': highest_consumption2,
         'fastest_beer1': fastest_beer1,
         'fastest_beer2': fastest_beer2,
-    })
-    return HttpResponse(t.render(c))
+    }
+    return render_to_response(
+            'index.html', context,
+            context_instance=RequestContext(request))
 
 
 def get_highest_consumption(user_amount):

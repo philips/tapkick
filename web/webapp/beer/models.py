@@ -46,6 +46,7 @@ class User(models.Model):
     name = models.CharField(max_length=255, default='Beer Lover')
     email = models.EmailField(blank=True, null=True)
     receive_alerts = models.BooleanField(default=True)
+    private = models.BooleanField(default=False, help_text="Indicate a user does not want to appear on site")
 
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.rfid)

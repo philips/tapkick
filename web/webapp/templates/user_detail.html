@@ -1,5 +1,9 @@
-<h1>The detail of user</h1>
-<ul>
-    <li>RFID : {{rfid}}</li>
-    <li>Name : {{name}}</li>
-</ul>
+{% extends "base.html" %}
+
+{% block container %}
+    <h1>User detail for {{user.name}}</h1>
+    <ul>
+        <li>RFID : {{user.rfid}}</li>
+        <li>Name : {{user.name}}</li>
+    </ul>
+{% endblock container %}
