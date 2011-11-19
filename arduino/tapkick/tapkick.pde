@@ -93,7 +93,8 @@ OneWire ds2(temp2);
 SparkFunSerLCD lcd(lcdPin, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 
 //--- Globals
-time_t startTap = 0;
+bool tapState = false;;
+time_t startTap = now();
 byte lastcode[6];
 float flow1 = 0.0;
 float flow2 = 0.0;
@@ -102,13 +103,15 @@ float temperature2 = 0.0;
 
 //--- Functions
 void openTaps() {
+  tapState = true;
   startTap = now();
   digitalWrite(tap1solenoid, HIGH);
   digitalWrite(tap2solenoid, HIGH);
 }
 
 void closeTaps() {
-  startTap = 0;
+  tapState = false;
+  startTap = now();
   digitalWrite(tap1solenoid, LOW);
   digitalWrite(tap2solenoid, LOW);
 }
@@ -276,8 +279,8 @@ void loop () {
 
   getRFID();
 
-  //--- Turn off Taps
-  if(startTap > 0 and (now() - startTap >= TAP_DELAY)) {
+  //--- Turn off Taps and print access
+  if(tapState and (now() - startTap >= TAP_DELAY)) {
     //--- Close the taps
     closeTaps();
 
