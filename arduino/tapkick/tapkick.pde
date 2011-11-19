@@ -97,6 +97,8 @@ time_t startTap = 0;
 byte lastcode[6];
 float flow1 = 0.0;
 float flow2 = 0.0;
+float temperature1 = 0.0;
+float temperature2 = 0.0;
 
 //--- Functions
 void openTaps() {
@@ -237,9 +239,25 @@ void getRFID() {
   }
 }
 
+void setTemps() {
+  //--- Get the temperature in Celcius
+  temperature1 = getTemp(ds1);
+  temperature2 = getTemp(ds2);
+}
+
+void printTemps() {
+  //--- Print the temps to the lcd
+  lcd.at(1,1,"Temp1:");
+  lcd.at(1,7,int(temperature1));
+  lcd.at(1,9,"C");
+  lcd.at(1,11,"Temp2:");
+  lcd.at(1,17,int(temperature2));
+  lcd.at(1,19,"C");
+}
+
 void setup() {
-  Serial.begin(9600);                                 // connect to the serial port
-  Serial1.begin(9600);                                // connect to the rfid
+  Serial.begin(9600);    // connect to the serial port
+  Serial1.begin(9600);   // connect to the rfid
 
   //--- Set up Solenoid Valves
   pinMode(tap1solenoid, OUTPUT);
@@ -248,20 +266,23 @@ void setup() {
 
   //--- Set up the LCD
   lcd.setup();
+
+  //--- Set the temps
+  setTemps();
+  printTemps();
 }
 
 void loop () {
 
   getRFID();
 
-  //--- Get the temperature in Celcius
-  float temperature1 = getTemp(ds1);
-  float temperature2 = getTemp(ds2);
-
   //--- Turn off Taps
   if(startTap > 0 and (now() - startTap >= TAP_DELAY)) {
     //--- Close the taps
     closeTaps();
+
+    //--- Set the temps
+    setTemps();
 
     //--- Print out the data for the access period
     for (int i=0; i<5; i++) {
@@ -276,22 +297,17 @@ void loop () {
     Serial.print("/");
     Serial.print(temperature2);
     Serial.println();
-    
+
     //--- Reset the flow now that you've printed it
     resetFlow();
+
+    //--- Print more info if we want
+    printTemps();
+    lcd.at(2,2,"LCD Tapkick Test 2");
+    lcd.at(3,2,"LCD Tapkick Test 3");
+    lcd.at(4,2,"LCD Tapkick Test 4");
   } else {
     addFlow();
   }
 
-  lcd.at(1,1,"Temp1:");
-  lcd.at(1,7,int(temperature1));
-  lcd.at(1,9,"C");
-  lcd.at(1,11,"Temp2:");
-  lcd.at(1,17,int(temperature2));
-  lcd.at(1,19,"C");
-  lcd.at(2,2,"LCD Tapkick Test 2");
-  lcd.at(3,2,"LCD Tapkick Test 3");
-  lcd.at(4,2,"LCD Tapkick Test 4");
-  delay(1000);
-  lcd.empty();
 }
