@@ -109,13 +109,22 @@ if __name__ == '__main__':
                 if created:
                     print 'Welcome to Tapkick user %s' % rfid
 
-                # @TODO: Choose beer based on flow data
-                beer = Beer.objects.all()[0]
+                # Create the access object
+                access = Access(user=user)
+
+                # Select the beer based on flow data
+                if flow[0] > flow[1]:
+                    beer = Beer.objects.get(tap_number=1)
+                    access.amount = flow[0]
+                else:
+                    beer = Beer.objects.get(tap_number=2)
+                    access.amount = flow[1]
+                access.beer = beer
 
                 # Record access in the database
-                access = Access(user=user, beer=beer, amount=flow[1])
                 access.save()
 
+                # Save the old temperature data
                 for i in xrange(0, 2):
                     last_temp[i] = temp[i]
 
