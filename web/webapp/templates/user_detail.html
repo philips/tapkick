@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block title %}{{user.name}}{% endblock title %}
 {% block container %}
     <h1>User detail for {{user.name}}</h1>
     <ul>
