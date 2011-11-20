@@ -25,6 +25,14 @@ class Beer(models.Model):
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.beer_type)
 
+    def save(self, *args, **kwargs):
+        """
+        Tap cannot be active if it has ended
+        """
+        if self.end_date:
+            self.active = False
+        super(Beer, self).save(*args, **kwargs)
+
     def cups_left(self):
         """
         Return approximate number of cups left in this keg of beer.
