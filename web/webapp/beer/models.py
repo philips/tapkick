@@ -25,12 +25,12 @@ class Beer(models.Model):
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.beer_type)
 
-    """
-    Return approximate number of cups left in this keg of beer.
-    Converts amount_left to ounces, and divides that by 12 to get amount of
-    12 ounce cups left.
-    """
     def cups_left(self):
+        """
+        Return approximate number of cups left in this keg of beer.
+        Converts amount_left to ounces, and divides that by 12 to get amount of
+        12 ounce cups left.
+        """
         return int(round((self.amount_left * 33.8140227) / 12))
 
     def percent_left(self):
