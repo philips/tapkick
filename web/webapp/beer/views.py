@@ -3,11 +3,13 @@ import datetime
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import Http404
+from django.http import HttpResponse
+from django.db.models import Count 
 from django.db.models import Sum
 from beer.models import User
 from beer.models import Access
 from beer.models import Beer
-
+import json
 
 def user_list(request):
     user_list = User.objects.filter(private=False)
@@ -112,3 +114,41 @@ def get_fastest_beer(user_time):
     if access:
         return access[0]
     return None
+
+
+def get_graph(request, tap_number):
+    if request.is_ajax():
+        tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
+        tap_graph = get_graph_array(tap_beer)
+        
+        mimetype = 'application/javascript'
+        data = json.dumps(tap_graph)
+        return HttpResponse(data,mimetype)
+    else:
+        return HttpResponse(status=400)
+
+def get_graph_array(beer):
+        array = []
+        select_data = {"d": "strftime('%%Y-%%m-%%dT%%H:00:00.000', time)"}
+        tap_counts = Access.objects.filter(beer=beer).extra(select=select_data).values('d').annotate(Count('user')).order_by()    
+        if tap_counts:
+            for data in tap_counts:
+                for k, v in data.iteritems():
+                    if k == 'user__count':
+                        array.append(v)
+    
+            return array
+        else:
+            pass
+
+def get_tap(request, tap_number):
+    if request.is_ajax():
+        tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
+        percent_left = tap_beer.percent_left()
+        
+        mimetype = 'application/javascript'
+        data = json.dumps(percent_left)
+        return HttpResponse(data,mimetype)
+    else:
+        return HttpResponse(status=400)
+
