@@ -44,11 +44,45 @@ function setLevel(tapNumber, level) {
 	} else {
 		alert("level out of range (must be 0-100)");
 	}
-	
-	console.log(x);
-	
+		
 	$("#" + tapNumber + " .tank-level").css("background-position", x + "px " + y + "px");
 
+}
+
+function updateValues() {
+
+	console.log("checking values...");
+	
+	//FIRST TAP DATA
+	$.post("/get_tap/1/", function(data) {
+		
+		console.log("level1:" + data);
+		setLevel("one", data);
+		
+	});
+	
+	$.post("/get_graph/1/", function(data) {
+		
+		console.log("graph1:" + data);
+		generateChart("one", data);
+		
+	});
+	
+	//FIRST TAP DATA
+	$.post("/get_tap/1/", function(data) {
+		
+		console.log("level2:" + data);
+		setLevel("two", data);
+		
+	});
+	
+	$.post("/get_graph/1/", function(data) {
+		
+		console.log("graph2:" + data);
+		generateChart("two", data);
+		
+	});
+	
 }
 
 $(document).ready(function(){
@@ -56,12 +90,14 @@ $(document).ready(function(){
 	//ANIMATE TANK LEVEL
 	//var interval = setInterval("animate()", 100);	
 
-	//SET TANK LEVEL
+	var interval = setInterval("updateValues()", 5000);
+	
+	/*//SET TANK LEVEL
 	setLevel("one", Math.floor(Math.random()*100));
 	setLevel("two", Math.floor(Math.random()*100));
 	
 	//GENERATE CHART
 	generateChart("one", [3,4,5,6,4,6,9,3,2]);
-	generateChart("two", [3,4,5,6,4,6,9,3,2]);
+	generateChart("two", [3,4,5,6,4,6,9,3,2]);*/
 	
 });
