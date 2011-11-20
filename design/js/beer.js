@@ -54,34 +54,55 @@ function updateValues() {
 	console.log("checking values...");
 	
 	//FIRST TAP DATA
-	$.post("/get_tap/1/", function(data) {
-		
-		console.log("level1:" + data);
-		setLevel("one", data);
-		
+	$.ajax({
+		type: 'GET',
+		url: "/get_tap/1",
+		success: function(data){
+			
+			console.log(data);
+			setLevel("one", data*100);
+
+		}
+
+	});
+
+	$.ajax({
+		type: 'GET',
+		url: "/get_graph/1",
+		success: function(data){
+			
+			console.log(data);
+			generateChart("one", $.parseJSON(data));
+
+		}
+
+	});
+
+	//SECOND TAP DATA
+	$.ajax({
+		type: 'GET',
+		url: "/get_tap/2",
+		success: function(data){
+			
+			console.log(data);
+			setLevel("two", data*100);
+
+		}
+
+	});
+
+	$.ajax({
+		type: 'GET',
+		url: "/get_graph/2",
+		success: function(data){
+			
+			console.log(data);
+			generateChart("two", $.parseJSON(data));
+
+		}
+
 	});
 	
-	$.post("/get_graph/1/", function(data) {
-		
-		console.log("graph1:" + data);
-		generateChart("one", data);
-		
-	});
-	
-	//FIRST TAP DATA
-	$.post("/get_tap/1/", function(data) {
-		
-		console.log("level2:" + data);
-		setLevel("two", data);
-		
-	});
-	
-	$.post("/get_graph/1/", function(data) {
-		
-		console.log("graph2:" + data);
-		generateChart("two", data);
-		
-	});
 	
 }
 
@@ -90,8 +111,8 @@ $(document).ready(function(){
 	//ANIMATE TANK LEVEL
 	//var interval = setInterval("animate()", 100);	
 
-	var interval = setInterval("updateValues()", 5000);
-	
+	//var interval = setInterval("updateValues()", 5000);
+	updateValues();
 	/*//SET TANK LEVEL
 	setLevel("one", Math.floor(Math.random()*100));
 	setLevel("two", Math.floor(Math.random()*100));

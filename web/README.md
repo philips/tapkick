@@ -2,7 +2,7 @@ To set up django app:
 
     $ cd /tapkick/web
     $ virtualenv env
-    $ ln -s /en/bin/activate
+    $ ln -s ./env/bin/activate
     $ source activate
     $ pip install -r requirements.txt
     $ cd webapp

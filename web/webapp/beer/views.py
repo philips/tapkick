@@ -125,15 +125,12 @@ def get_fastest_beer(user_time):
 
 
 def get_graph(request, tap_number):
-    if request.is_ajax():
-        tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
-        tap_graph = get_graph_array(tap_beer)
-        
-        mimetype = 'application/javascript'
-        data = json.dumps(tap_graph)
-        return HttpResponse(data,mimetype)
-    else:
-        return HttpResponse(status=400)
+    tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
+    tap_graph = get_graph_array(tap_beer)
+    
+    mimetype = 'application/javascript'
+    data = json.dumps(tap_graph)
+    return HttpResponse(data,mimetype)
 
 def get_graph_array(beer):
         array = []
@@ -150,13 +147,10 @@ def get_graph_array(beer):
             pass
 
 def get_tap(request, tap_number):
-    if request.is_ajax():
-        tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
-        percent_left = tap_beer.percent_left()
+    tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
+    percent_left = tap_beer.percent_left()
         
-        mimetype = 'application/javascript'
-        data = json.dumps(percent_left)
-        return HttpResponse(data,mimetype)
-    else:
-        return HttpResponse(status=400)
+    mimetype = 'application/javascript'
+    data = json.dumps(percent_left)
+    return HttpResponse(data,mimetype)
 
