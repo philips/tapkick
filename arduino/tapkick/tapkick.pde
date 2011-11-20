@@ -79,6 +79,7 @@
 #define power        7
 #define temp1        10 // DS18B20 Transistor
 #define temp2        11 // DS18B20 Transistor
+#define led          12
 #define rfid         19
 
 //--- Constants
@@ -104,12 +105,14 @@ float temperature2 = 0.0;
 void openTaps() {
   tapState = true;
   startTap = now();
+  digitalWrite(led, HIGH);
   digitalWrite(power, HIGH);
 }
 
 void closeTaps() {
   tapState = false;
   startTap = now();
+  digitalWrite(led, LOW);
   digitalWrite(power, LOW);
 }
 
@@ -259,7 +262,8 @@ void setup() {
   Serial.begin(9600);    // connect to the serial port
   Serial1.begin(9600);   // connect to the rfid
 
-  //--- Set up Power
+  //--- Set up pins
+  pinMode(led, OUTPUT);
   pinMode(power, OUTPUT);
   closeTaps();
 
