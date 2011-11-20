@@ -14,13 +14,13 @@ TAP_NUMBER_CHOICES = (
 class Beer(models.Model):
     beer_type = models.CharField(max_length=3, default='def', choices=BEER_TYPE_CHOICES)
     name = models.CharField(max_length=255, default='New Beer')
+    slug = models.SlugField()
     start_date = models.DateTimeField(default=datetime.datetime.now(), blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     size = models.FloatField("Size (in liters)", default=29.33, choices=KEG_SIZE_CHOICES)
     amount_left = models.FloatField("Amount left (in liters)", default=29.33)
     tap_number = models.IntegerField(choices=TAP_NUMBER_CHOICES)
     active = models.BooleanField(default=True)
-    slug = models.SlugField()
 
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.beer_type)
@@ -35,6 +35,7 @@ class Beer(models.Model):
 
     def percent_left(self):
         return self.amount_left / self.size
+
 
 class User(models.Model):
     rfid = models.CharField("RFID", max_length=20)
@@ -79,4 +80,3 @@ class Access(models.Model):
         b.amount_left -= self.amount
         b.save()
         super(Access, self).save()
-
