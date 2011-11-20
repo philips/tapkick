@@ -13,7 +13,7 @@ TAP_NUMBER_CHOICES = (
 
 class Beer(models.Model):
     beer_type = models.CharField(max_length=3, default='def', choices=BEER_TYPE_CHOICES)
-    name = models.CharField(max_length=255, default='New Beer')
+    name = models.CharField(max_length=255)
     slug = models.SlugField()
     start_date = models.DateTimeField(default=datetime.datetime.now(), blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
