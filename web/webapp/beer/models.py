@@ -33,13 +33,14 @@ class Beer(models.Model):
             self.active = False
         super(Beer, self).save(*args, **kwargs)
 
-    def cups_left(self):
+    def cups_left(self, oz_per_cup=12):
         """
         Return approximate number of cups left in this keg of beer.
         Converts amount_left to ounces, and divides that by 12 to get amount of
         12 ounce cups left.
         """
-        return int(round((self.amount_left * 33.8140227) / 12))
+        liters_to_fl_ounces = 33.8140227
+        return int(round((self.amount_left * liters_to_fl_ounces) / oz_per_cup))
 
     def percent_left(self):
         return self.amount_left / self.size
