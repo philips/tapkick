@@ -15,7 +15,7 @@ class BeerAdmin(admin.ModelAdmin):
     list_display = ('name', amount_in_liters, 'cups_left',
                     'start_date', 'end_date', 'tap_number', 'active')
     list_filter = ('name',)
-
+    prepopulated_fields = {'slug':('name',),}
 
 class AccessAdmin(admin.ModelAdmin):
     list_display = ('user', amount_in_liters, 'beer', 'time')

@@ -20,6 +20,7 @@ class Beer(models.Model):
     amount_left = models.FloatField("Amount left (in liters)", default=29.33)
     tap_number = models.IntegerField(choices=TAP_NUMBER_CHOICES)
     active = models.BooleanField(default=True)
+    slug = models.SlugField()
 
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.beer_type)
@@ -31,7 +32,6 @@ class Beer(models.Model):
     """
     def cups_left(self):
         return int(round((self.amount_left * 33.8140227) / 12))
-
 
 class User(models.Model):
     rfid = models.CharField("RFID", max_length=20)
@@ -62,6 +62,7 @@ class Access(models.Model):
     amount = models.FloatField()
     user = models.ForeignKey(User)
     beer = models.ForeignKey(Beer)
+    temperature = models.FloatField(blank=True, null=True)
 
     class Meta:
         ordering = ["-time"]
@@ -69,3 +70,10 @@ class Access(models.Model):
 
     def __unicode__(self):
         return u'%s, %s, %s, %s' % (self.time, self.user, self.beer, self.amount)
+
+    def save(self):
+        b = self.beer
+        b.amount_left -= self.amount
+        b.save()
+        super(Access, self).save()
+
