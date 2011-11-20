@@ -6,7 +6,7 @@
 <div id="one" class="tap">
 	<div class="box">
 		<div class="logo">
-			<img src="{{ STATIC_URL }}img/logo_pbr.png">
+			<img src="{{ STATIC_URL }}img/logo_21st_ipa.png">
 		</div>
 		<div class="tank">
 			<div class="tank-shell">&nbsp;</div>
@@ -15,7 +15,7 @@
 		<div class="meta">
             <img src="{{ STATIC_URL }}img/one.png">
             <h2>{{tap1_beer.name}}</h2>
-            <h2>{{tap1_beer.cups_left}} beers left</h2>
+            <h4>{{tap1_beer.cups_left}} beers left</h4>
 			<div class="item">
 				<div class="item-key">Age:</div>
                 <div class="item-value">{{tap1_beer.start_date|timesince:now}}</div>
@@ -23,6 +23,14 @@
 			<div class="item">
 				<div class="item-key">Vol:</div>
                 <div class="item-value">{{tap1_beer.amount_left}} L</div>
+			</div>
+			<div class="item">
+				<div class="item-key">IBU:</div>
+                <div class="item-value">64</div>
+			</div>
+			<div class="item">
+				<div class="item-key">ABV:</div>
+                <div class="item-value">9.1%</div>
 			</div>
 		</div>
 	</div>
@@ -58,7 +66,7 @@
 <div id="two" class="tap">
 	<div class="box">
 		<div class="logo">
-			<img src="{{ STATIC_URL }}img/logo_pbr.png">
+			<img src="{{ STATIC_URL }}img/logo_scrimshaw_pils.png">
 		</div>
 		<div class="tank">
 			<div class="tank-shell">&nbsp;</div>
@@ -67,7 +75,7 @@
 		<div class="meta">
 			<img src="{{ STATIC_URL }}img/two.png">
             <h2>{{tap2_beer.name}}</h2>
-            <h2>{{tap2_beer.cups_left}} beers left</h2>
+            <h4>{{tap2_beer.cups_left}} beers left</h4>
 			<div class="item">
 				<div class="item-key">Age:</div>
                 <div class="item-value">{{tap2_beer.start_date|timesince:now}}</div>
@@ -75,6 +83,14 @@
 			<div class="item">
 				<div class="item-key">Vol:</div>
                 <div class="item-value">{{tap2_beer.amount_left}} L</div>
+			</div>
+			<div class="item">
+				<div class="item-key">IBU:</div>
+                <div class="item-value">64</div>
+			</div>
+			<div class="item">
+				<div class="item-key">ABV:</div>
+                <div class="item-value">9.1%</div>
 			</div>
 		</div>
 	</div>

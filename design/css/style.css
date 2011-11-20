@@ -107,6 +107,11 @@ a {
 	margin-bottom: 8px;
 }
 
+.box .meta h4 {
+	margin-top: 6px;
+	margin-bottom: 8px;
+}
+
 .box .meta .item {
 	width: 140px;
 }
