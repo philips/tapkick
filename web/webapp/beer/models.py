@@ -33,6 +33,9 @@ class Beer(models.Model):
     def cups_left(self):
         return int(round((self.amount_left * 33.8140227) / 12))
 
+    def percent_left(self):
+        return self.amount_left / self.size
+
 class User(models.Model):
     rfid = models.CharField("RFID", max_length=20)
     name = models.CharField(max_length=255, default='Beer Lover')
