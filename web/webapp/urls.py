@@ -11,6 +11,8 @@ urlpatterns = patterns('',
     url(r'^$', 'beer.views.front_page', name='front_page'),
 
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^get_graph/(?P<tap_number>\w+)/$', 'beer.views.get_graph'),
+    url(r'^get_tap/(?P<tap_number>\w+)/$', 'beer.views.get_tap'),
 )
 
 urlpatterns += staticfiles_urlpatterns()
