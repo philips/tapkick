@@ -1,15 +1,16 @@
 import datetime
+import json
 
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import Http404
 from django.http import HttpResponse
-from django.db.models import Count 
+from django.db.models import Count
 from django.db.models import Sum
 from beer.models import User
 from beer.models import Access
 from beer.models import Beer
-import json
+
 
 def user_list(request):
     user_list = User.objects.filter(private=False)
@@ -23,7 +24,7 @@ def user_list(request):
 
 def user_detail(request, rfid_id):
     try:
-        user = User.objects.get(rfid=rfid_id)
+        user = User.objects.get(rfid=rfid_id, private=False)
     except User.DoesNotExist:
         raise Http404
     context = {
@@ -124,33 +125,36 @@ def get_fastest_beer(user_time):
     return None
 
 
+def json_response(data, code=200, mimetype='application/json'):
+    resp = HttpResponse(data, mimetype)
+    resp.code = code
+    return resp
+
+
 def get_graph(request, tap_number):
     tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
     tap_graph = get_graph_array(tap_beer)
-    
-    mimetype = 'application/javascript'
     data = json.dumps(tap_graph)
-    return HttpResponse(data,mimetype)
+    return json_response(data)
+
 
 def get_graph_array(beer):
         array = []
         select_data = {"d": "strftime('%%Y-%%m-%%dT%%H:00:00.000', time)"}
-        tap_counts = Access.objects.filter(beer=beer).extra(select=select_data).values('d').annotate(Count('user')).order_by()    
+        tap_counts = Access.objects.filter(beer=beer).extra(select=select_data).values('d').annotate(Count('user')).order_by()
         if tap_counts:
             for data in tap_counts:
                 for k, v in data.iteritems():
                     if k == 'user__count':
                         array.append(v)
-    
+
             return array
         else:
             pass
 
+
 def get_tap(request, tap_number):
     tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
     percent_left = tap_beer.percent_left()
-        
-    mimetype = 'application/javascript'
     data = json.dumps(percent_left)
-    return HttpResponse(data,mimetype)
-
+    return json_response(data)

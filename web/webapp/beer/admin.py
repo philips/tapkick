@@ -1,6 +1,4 @@
-from beer.models import Beer
-from beer.models import Access
-from beer.models import User
+from beer.models import Beer, User, Access
 from django.contrib import admin
 
 
