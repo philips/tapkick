@@ -12,15 +12,19 @@ TAP_NUMBER_CHOICES = (
 
 
 class Beer(models.Model):
-    beer_type = models.CharField(max_length=3, default='def', choices=BEER_TYPE_CHOICES)
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    start_date = models.DateTimeField(default=datetime.datetime.now(), blank=True, null=True)
-    end_date = models.DateTimeField(blank=True, null=True)
-    size = models.FloatField("Size (in liters)", default=29.33, choices=KEG_SIZE_CHOICES)
-    amount_left = models.FloatField("Amount left (in liters)", default=29.33)
+    beer_type = models.CharField(max_length=3, default='def', choices=BEER_TYPE_CHOICES)
     tap_number = models.IntegerField(choices=TAP_NUMBER_CHOICES)
     active = models.BooleanField(default=True)
+
+    start_date = models.DateTimeField(default=datetime.datetime.now(), blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+
+    size = models.FloatField("Size (in liters)", default=29.33, choices=KEG_SIZE_CHOICES)
+    amount_left = models.FloatField("Amount left (in liters)")
+    ibu = models.PositiveIntegerField(default=0, help_text="International Bitterness Units (IBU)")
+    abv = models.FloatField(default=0.0, help_text="Alcohol by Volume")
 
     def __unicode__(self):
         return u'%s, %s' % (self.name, self.beer_type)
@@ -28,12 +32,22 @@ class Beer(models.Model):
     def save(self, *args, **kwargs):
         """
         Tap cannot be active if it has ended,
-        Tap cannot have negative amount
+        Tap cannot have negative amount,
+        Tap with no amount must be full,
+        Only one active tap per tap number
         """
         if self.end_date:
             self.active = False
+
         if self.amount_left < 0.0:
             self.amount_left = 0.0
+        elif not self.amount_left:
+            self.amount_left = self.size
+
+        if self.active:
+            for beer in Beer.objects.filter(tap_number=self.tap_number).exclude(id=self.id):
+                beer.active = False
+                beer.save()
         super(Beer, self).save(*args, **kwargs)
 
     def cups_left(self, oz_per_cup=12):
