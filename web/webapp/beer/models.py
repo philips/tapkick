@@ -27,10 +27,13 @@ class Beer(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Tap cannot be active if it has ended
+        Tap cannot be active if it has ended,
+        Tap cannot have negative amount
         """
         if self.end_date:
             self.active = False
+        if self.amount_left < 0.0:
+            self.amount_left = 0.0
         super(Beer, self).save(*args, **kwargs)
 
     def cups_left(self, oz_per_cup=12):
