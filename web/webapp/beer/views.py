@@ -2,14 +2,10 @@ import datetime
 import json
 
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.http import Http404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.http import HttpResponse
-from django.db.models import Count
-from django.db.models import Sum
-from beer.models import User
-from beer.models import Access
-from beer.models import Beer
+from django.db.models import Count, Sum
+from beer.models import User, Beer, Access
 
 
 def user_list(request):
@@ -23,10 +19,7 @@ def user_list(request):
 
 
 def user_detail(request, rfid_id):
-    try:
-        user = User.objects.get(rfid=rfid_id, private=False)
-    except User.DoesNotExist:
-        raise Http404
+    user = get_object_or_404(User, rfid=rfid_id, private=False)
     context = {
         'user': user,
     }
@@ -132,7 +125,7 @@ def json_response(data, code=200, mimetype='application/json'):
 
 
 def get_graph(request, tap_number):
-    tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
+    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
     tap_graph = get_graph_array(tap_beer)
     data = json.dumps(tap_graph)
     return json_response(data)
@@ -154,7 +147,7 @@ def get_graph_array(beer):
 
 
 def get_tap(request, tap_number):
-    tap_beer = Beer.objects.get(tap_number=tap_number, active=True)
+    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
     percent_left = tap_beer.percent_left()
     data = json.dumps(percent_left)
     return json_response(data)
