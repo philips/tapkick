@@ -55,9 +55,10 @@ if __name__ == '__main__':
     # Scan the ports if none given
     if not PORT:
         for port in scanports():
-            if 'usbserial' in port or 'usbmodem' in port:
-                PORT = port
-                break
+            for usb in ['usbserial', 'usbmodem', 'acm']:
+                if usb.lower() in port.lower():
+                    PORT = port
+                    break
         if not PORT:
             print 'Port not found, please connect device or set before running'
             sys.exit()
