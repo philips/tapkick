@@ -22,7 +22,7 @@ class Beer(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
 
     size = models.FloatField("Size (in liters)", default=29.33, choices=KEG_SIZE_CHOICES)
-    amount_left = models.FloatField("Amount left (in liters)")
+    amount_left = models.FloatField("Amount left (in liters)", blank=True, null=True)
     ibu = models.PositiveIntegerField(default=0, help_text="International Bitterness Units (IBU)")
     abv = models.FloatField(default=0.0, help_text="Alcohol by Volume")
 
@@ -32,17 +32,17 @@ class Beer(models.Model):
     def save(self, *args, **kwargs):
         """
         Tap cannot be active if it has ended,
-        Tap cannot have negative amount,
         Tap with no amount must be full,
+        Tap cannot have negative amount,
         Only one active tap per tap number
         """
         if self.end_date:
             self.active = False
 
-        if self.amount_left < 0.0:
-            self.amount_left = 0.0
-        elif not self.amount_left:
+        if self.amount_left != 0.0 and self.amount_left == None:
             self.amount_left = self.size
+        elif self.amount_left < 0.0:
+            self.amount_left = 0.0
 
         if self.active:
             for beer in Beer.objects.filter(tap_number=self.tap_number).exclude(id=self.id):
