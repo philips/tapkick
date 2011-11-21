@@ -43,7 +43,13 @@ class Beer(models.Model):
         return int(round((self.amount_left * liters_to_fl_ounces) / oz_per_cup))
 
     def percent_left(self):
-        return self.amount_left / self.size
+        percent = self.amount_left / self.size
+        if percent < 0.0:
+            return 0.0
+        elif percent > 100.0:
+            return 100.0
+        else:
+            return percent
 
 
 class User(models.Model):
