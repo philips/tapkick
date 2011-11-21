@@ -49,8 +49,8 @@ class Beer(models.Model):
         percent = self.amount_left / self.size
         if percent < 0.0:
             return 0.0
-        elif percent > 100.0:
-            return 100.0
+        elif percent > 1.0:
+            return 1.0
         else:
             return percent
 
