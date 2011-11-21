@@ -15,16 +15,21 @@ class BeerAdmin(admin.ModelAdmin):
     list_display = ('name', amount_in_liters, 'cups_left',
                     'start_date', 'end_date', 'tap_number', 'active')
     list_filter = ('name',)
-    prepopulated_fields = {'slug':('name',),}
+    prepopulated_fields = {'slug': ('name', )}
 
-class AccessAdmin(admin.ModelAdmin):
-    list_display = ('user', amount_in_liters, 'beer', 'time')
-    list_filter = ('beer', 'time',)
+admin.site.register(Beer, BeerAdmin)
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('name', 'rfid')
+    list_display = ('name', 'rfid', 'email', 'receive_alerts', 'private')
+    list_editable = ('receive_alerts', 'private')
+    list_filter = ('receive_alerts', 'private')
 
-admin.site.register(Beer, BeerAdmin)
-admin.site.register(Access, AccessAdmin)
 admin.site.register(User, UserAdmin)
+
+
+class AccessAdmin(admin.ModelAdmin):
+    list_display = ('user', amount_in_liters, 'beer', 'time', 'temperature')
+    list_filter = ('beer', 'time',)
+
+admin.site.register(Access, AccessAdmin)
