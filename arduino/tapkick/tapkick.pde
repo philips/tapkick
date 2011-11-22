@@ -61,7 +61,15 @@
 
 /*
  * Flow sensors
- * TBD
+ * SF800
+ * http://www.swissflow.com/sf800.html
+ *
+ * RS = 232O Ohm
+ * RL = ~2.2 KOhm
+ *
+ * Red   - RS -> +5
+ * Green - Pin D5 on Arduion, connect RL between this line and Red
+ * Black - GND
  *
  */
 
@@ -76,6 +84,8 @@
 
 //--- Digital Pins
 #define lcdPin       2
+#define flow1        4
+#define flow2        5
 #define power        7
 #define temp1        10 // DS18B20 Transistor
 #define temp2        11 // DS18B20 Transistor
@@ -86,6 +96,8 @@
 #define TAP_DELAY 5
 #define LCD_ROWS 4
 #define LCD_COLS 20
+#define FLOW_TIMEOUT 20000
+#define FLOW_CONST 6100
 
 //--- Instantiate Class Objects
 OneWire ds1(temp1);
@@ -96,8 +108,8 @@ SparkFunSerLCD lcd(lcdPin, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 bool tapState = false;;
 time_t startTap = now();
 byte lastcode[6];
-float flow1 = 0.0;
-float flow2 = 0.0;
+float flowCount1 = 0.0;
+float flowCount2 = 0.0;
 float temperature1 = 0.0;
 float temperature2 = 0.0;
 
@@ -112,18 +124,25 @@ void openTaps() {
 void closeTaps() {
   tapState = false;
   startTap = now();
+  resetFlow();
   digitalWrite(led, LOW);
   digitalWrite(power, LOW);
 }
 
 void resetFlow() {
-  flow1 = 0.0;
-  flow2 = 0.0;
+  flowCount1 = 0.0;
+  flowCount2 = 0.0;
 }
 
-void addFlow() {
-  flow1 += 1.0;
-  flow2 += 1.0;
+void getFlow() {
+  unsigned long flowDur1 = pulseIn(flow1, HIGH, FLOW_TIMEOUT);
+  unsigned long flowDur2 = pulseIn(flow2, HIGH, FLOW_TIMEOUT);
+  if (flowDur1 > 0){
+    flowCount1++;
+  }
+  if (flowDur2 > 0){
+    flowCount2++;
+  }
 }
 
 float getTemp(OneWire ds){
@@ -263,6 +282,8 @@ void setup() {
   Serial1.begin(9600);   // connect to the rfid
 
   //--- Set up pins
+  pinMode(flow1, INPUT);
+  pinMode(flow2, INPUT);
   pinMode(led, OUTPUT);
   pinMode(power, OUTPUT);
   closeTaps();
@@ -278,6 +299,7 @@ void setup() {
 void loop () {
 
   getRFID();
+  getFlow();
 
   //--- Turn off Taps and print access
   if(tapState and (now() - startTap >= TAP_DELAY)) {
@@ -292,9 +314,9 @@ void loop () {
       Serial.print(lastcode[i], HEX);
     }
     Serial.print(":");
-    Serial.print(flow1);
+    Serial.print(float(flow1)/float(FLOW_CONST));
     Serial.print("/");
-    Serial.print(flow2);
+    Serial.print(float(flow2)/float(FLOW_CONST));
     Serial.print("/");
     Serial.print(temperature1);
     Serial.print("/");
@@ -306,11 +328,9 @@ void loop () {
 
     //--- Print more info if we want
     printTemps();
-    lcd.at(2,2,"LCD Tapkick Test 2");
-    lcd.at(3,2,"LCD Tapkick Test 3");
-    lcd.at(4,2,"LCD Tapkick Test 4");
-  } else {
-    addFlow();
+    lcd.at(2,2,"Rackers");
+    lcd.at(3,2,"Love");
+    lcd.at(4,2,"Beer");
   }
 
 }
