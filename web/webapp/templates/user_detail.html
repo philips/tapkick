@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load gravatar %}
 
 {% block title %}{{user.name}}{% endblock title %}
 {% block container %}
-    <h1>User detail for {{user.name}}</h1>
+    <h1><img src="{% gravatar_for_email user.email 40 %}"> User detail for {{user.name}}</h1>
     <ul>
         <li>RFID : {{user.rfid}}</li>
         <li>Name : {{user.name}}</li>
