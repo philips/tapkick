@@ -72,7 +72,7 @@ class Beer(models.Model):
 class User(models.Model):
     rfid = models.CharField("RFID", max_length=20)
     name = models.CharField(max_length=255, default='Beer Lover')
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(default="", blank=True, null=True)
     receive_alerts = models.BooleanField(default=True)
     private = models.BooleanField(default=False, help_text="Indicate a user does not want to appear on site")
 
