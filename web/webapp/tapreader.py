@@ -95,13 +95,6 @@ if __name__ == '__main__':
                 data_list = data.split(':')[1].split('/')
                 data = ''
 
-                # Only report temps in range
-                for i in xrange(0, 2):
-                    flow[i] = float(data_list[i])
-                    temp[i] = float(data_list[i + 2])
-                    if not min_temp < temp[i] < max_temp:
-                        temp[i] = last_temp[i]
-
                 # Print useful information
                 print datetime.datetime.now(), rfid, flow, temp
 
@@ -110,24 +103,29 @@ if __name__ == '__main__':
                 if created:
                     print 'Welcome to Tapkick user %s' % rfid
 
-                # Create the access object
-                access = Access(user=user)
-
-                # Select the beer based on flow data
-                if flow[0] > flow[1]:
-                    beer = Beer.objects.get(tap_number=1)
-                    access.amount = flow[0]
-                else:
-                    beer = Beer.objects.get(tap_number=2)
-                    access.amount = flow[1]
-                access.beer = beer
-
-                # Record access in the database
-                access.save()
-
-                # Save the old temperature data
+                # Do work for each tap
                 for i in xrange(0, 2):
+                    # Get and set the temp
+                    temp[i] = float(data_list[i + 2])
+                    if not min_temp < temp[i] < max_temp:
+                        temp[i] = last_temp[i]
+
+                    # Save the old temperature data
                     last_temp[i] = temp[i]
+
+                    # Get the flow and save an access
+                    flow[i] = float(data_list[i])
+                    if flow[i] > 0.0:
+                        # Create the access object
+                        access = Access(user=user)
+
+                        # Select the beer based on flow data
+                        beer = Beer.objects.get(tap_number=i + 1)
+                        access.amount = flow[i]
+                        access.beer = beer
+
+                        # Record access in the database
+                        access.save()
 
         except Exception, e:
             print e

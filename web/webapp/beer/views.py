@@ -51,17 +51,17 @@ def front_page(request):
         last_to_drink2 = drinker_list_tap2[0]
 
     user_amount1 = Access.objects.filter(beer=tap1_beer).values('user',
-        'user__name').order_by('user').annotate(total=Sum('amount')).order_by('-total')
+        'user__name', 'user__email').order_by('user').annotate(total=Sum('amount')).order_by('-total')
     user_amount2 = Access.objects.filter(beer=tap2_beer).values('user',
-        'user__name').order_by('user').annotate(total=Sum('amount')).order_by('-total')
+        'user__name', 'user__email').order_by('user').annotate(total=Sum('amount')).order_by('-total')
 
     highest_consumption1 = get_highest_consumption(user_amount1)
     highest_consumption2 = get_highest_consumption(user_amount2)
 
     user_time1 = Access.objects.filter(beer=tap1_beer).values('user',
-        'user__name', 'time').order_by('user', '-time')
+        'user__name', 'user__email', 'time').order_by('user', '-time')
     user_time2 = Access.objects.filter(beer=tap2_beer).values('user',
-        'user__name', 'time').order_by('user', '-time')
+        'user__name', 'user__email', 'time').order_by('user', '-time')
 
     fastest_beer1 = get_fastest_beer(user_time1)
     fastest_beer2 = get_fastest_beer(user_time2)
