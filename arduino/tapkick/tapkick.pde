@@ -135,6 +135,7 @@ void resetFlow() {
 }
 
 void getFlow() {
+  // @todo may need to use attachInterrupt(0, callback, RISING) to do this
   unsigned long flowDur1 = pulseIn(flow1, HIGH, FLOW_TIMEOUT);
   unsigned long flowDur2 = pulseIn(flow2, HIGH, FLOW_TIMEOUT);
   if (flowDur1 > 0){
