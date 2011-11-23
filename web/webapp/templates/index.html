@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load gravatar %}
 
 {% block title %}Home{% endblock title %}
 
@@ -38,7 +39,7 @@
     <div class="chart-desc">Consumption Trend (12 people)</div>
     {% if last_to_drink1 %}
 	<div class="person">
-		<img src="{{ STATIC_URL }}img/profiles/{{ last_to_drink1.user.name }}.jpg">
+        <img src="{% gravatar_for_email last_to_drink1.user.email 40 %}">
 		<h3>{{ last_to_drink1.user.name }}</h3>
 		<p>Last to Drink<span class="detail">({{ last_to_drink1.time|timesince }} ago)</span></p>
 		<div class="clear"></div>
@@ -47,7 +48,7 @@
     {% if highest_consumption1 %}
     {% for person in highest_consumption1 %}
 	<div class="person">
-		<img src="{{ STATIC_URL }}img/profiles/{{ person.user__name }}.jpg">
+        <img src="{% gravatar_for_email person.user__email 40 %}">
 		<h3>{{ person.user__name }}</h3>
 		<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
 		<div class="clear"></div>
@@ -56,7 +57,7 @@
     {% endif %}
     {% if fastest_beer1 %}
 	<div class="person">
-		<img src="{{ STATIC_URL }}img/profiles/{{ fastest_beer1.user__name }}.jpg">
+        <img src="{% gravatar_for_email fastest_beer1.user__email 40 %}">
 		<h3>{{ fastest_beer1.user__name }}</h3>
 		<p>Fastest Beer<span class="detail">({{ fastest_beer1.time }})</span></p>
 		<div class="clear"></div>
@@ -98,7 +99,7 @@
 	<div class="chart-desc">Consumption Trend (12 people)</div>
     {% if last_to_drink2 %}
 	<div class="person">
-		<img src="{{ STATIC_URL }}img/profiles/{{ last_to_drink2.user.name }}.jpg">
+        <img src="{% gravatar_for_email last_to_drink2.user.email 40 %}">
 		<h3>{{ last_to_drink2.user.name }}</h3>
 		<p>Last to Drink<span class="detail">({{ last_to_drink2.time|timesince }} ago)</span></p>
 		<div class="clear"></div>
@@ -107,7 +108,7 @@
     {% if highest_consumption2 %}
     {% for person in highest_consumption2 %}
 	<div class="person">
-		<img src="{{ STATIC_URL }}img/profiles/{{ person.user__name }}.jpg">
+        <img src="{% gravatar_for_email person.user__email 40 %}">
 		<h3>{{ person.user__name }}</h3>
 		<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
 		<div class="clear"></div>
@@ -116,7 +117,7 @@
     {% endif %}
     {% if fastest_beer2 %}
 	<div class="person">
-		<img src="{{ STATIC_URL }}img/profiles/{{ fastest_beer2.user__name }}.jpg">
+        <img src="{% gravatar_for_email fastest_beer2.user__email 40 %}">
 		<h3>{{ fastest_beer2.user__name }}</h3>
 		<p>Fastest Beer<span class="detail">({{ fastest_beer2.time }})</span></p>
 		<div class="clear"></div>
