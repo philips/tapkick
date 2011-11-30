@@ -107,7 +107,7 @@
 #define rfid         19
 
 //--- Constants
-#define TAP_DELAY 5
+#define TAP_DELAY 20
 #define LCD_ROWS 4
 #define LCD_COLS 20
 #define FLOW_TIMEOUT 20000
