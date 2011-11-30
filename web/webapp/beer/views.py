@@ -152,9 +152,7 @@ def get_graph_array(beer):
                     if k == 'user__count':
                         array.append(v)
 
-            return array
-        else:
-            pass
+        return array
 
 
 def get_tap(request, tap_number):
