@@ -67,7 +67,7 @@
  * RS = 232O Ohm
  * RL = ~2.2 KOhm
  *
- * Red   - RS -> +5
+ * Red   - RS -> +5V
  * Green - Pin D5 on Arduion, connect RL between this line and Red
  * Black - GND
  *
@@ -75,14 +75,14 @@
 
 /*
  * D-Sub Pinouts
- * 1 - T1 D10
- * 2 - F1 D4
- * 3 - T2 D11
- * 4 - F2 D5
+ * 1 - T1   D10
+ * 2 - F1   D4
+ * 3 - T2   D11
+ * 4 - F2   D5
  * 5 - 
- * 6 -
- * 7 -
- * 8 - 5V
+ * 6 - LCD  D2
+ * 7 - RFID D19
+ * 8 - +5V
  * 9 - GND
  *
  */
