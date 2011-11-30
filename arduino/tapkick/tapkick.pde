@@ -73,6 +73,20 @@
  *
  */
 
+/*
+ * D-Sub Pinouts
+ * 1 - T1 D10
+ * 2 - F1 D4
+ * 3 - T2 D11
+ * 4 - F2 D5
+ * 5 - 
+ * 6 -
+ * 7 -
+ * 8 - 5V
+ * 9 - GND
+ *
+ */
+
 //--- Includes
 #include <OneWire.h>
 #include "SoftwareSerial.h"
