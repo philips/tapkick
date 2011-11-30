@@ -56,7 +56,7 @@ function updateValues() {
 	//FIRST TAP DATA
 	$.ajax({
 		type: 'GET',
-		url: "/get_tap/1",
+		url: "/get_tap/1/",
 		success: function(data){
 			
 			console.log(data);
@@ -68,11 +68,11 @@ function updateValues() {
 
 	$.ajax({
 		type: 'GET',
-		url: "/get_graph/1",
+		url: "/get_graph/1/",
 		success: function(data){
 			
 			console.log(data);
-			generateChart("one", $.parseJSON(data));
+			generateChart("one", data);
 
 		}
 
@@ -81,7 +81,7 @@ function updateValues() {
 	//SECOND TAP DATA
 	$.ajax({
 		type: 'GET',
-		url: "/get_tap/2",
+		url: "/get_tap/2/",
 		success: function(data){
 			
 			console.log(data);
@@ -93,11 +93,11 @@ function updateValues() {
 
 	$.ajax({
 		type: 'GET',
-		url: "/get_graph/2",
+		url: "/get_graph/2/",
 		success: function(data){
 			
 			console.log(data);
-			generateChart("two", $.parseJSON(data));
+			generateChart("two", data);
 
 		}
 
