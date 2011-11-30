@@ -66,8 +66,16 @@ def front_page(request):
     fastest_beer1 = get_fastest_beer(user_time1)
     fastest_beer2 = get_fastest_beer(user_time2)
 
+    now = datetime.datetime.now()
+
+    # This step is needed in order to use the "timesince" templatetag
+    if fastest_beer1:
+        fastest_beer1['time'] = now - fastest_beer1['time']
+    if fastest_beer2:
+        fastest_beer2['time'] = now - fastest_beer2['time']
+
     context = {
-        'now': datetime.datetime.now(),
+        'now': now,
         'tap1_beer': tap1_beer,
         'tap2_beer': tap2_beer,
         'last_to_drink1': last_to_drink1,
@@ -108,7 +116,10 @@ def get_fastest_beer(user_time):
             latest_time = access['time']
         elif current_user == access['user'] and not done_flg:
             time = latest_time - access['time']
-            user_accesses.append({'user': access['user'], 'user__name': access['user__name'],
+            user_accesses.append({
+                'user': access['user'],
+                'user__name': access['user__name'],
+                'user__email': access['user__email'],
                 'time': time})
             done_flg = True
 
