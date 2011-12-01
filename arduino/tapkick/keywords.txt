@@ -1,0 +1,75 @@
+#######################################
+# Syntax Coloring Map For Time
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+time_t KEYWORD1
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+now	KEYWORD2
+second KEYWORD2
+minute	KEYWORD2
+hour KEYWORD2
+day KEYWORD2
+month KEYWORD2
+year KEYWORD2
+isAM KEYWORD2
+isPM KEYWORD2
+weekday KEYWORD2
+setTime KEYWORD2
+adjustTime KEYWORD2
+setSyncProvider KEYWORD2
+setSyncInteval KEYWORD2
+timeStatus KEYWORD2
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+
+
+
+#######################################
+# Syntax Coloring Map For OneWire
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+OneWire	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+reset	KEYWORD2
+write_bit	KEYWORD2
+read_bit	KEYWORD2
+write	KEYWORD2
+write_bytes	KEYWORD2
+read	KEYWORD2
+read_bytes	KEYWORD2
+select	KEYWORD2
+skip	KEYWORD2
+depower	KEYWORD2
+reset_search	KEYWORD2
+search	KEYWORD2
+crc8	KEYWORD2
+crc16	KEYWORD2
+check_crc16	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################

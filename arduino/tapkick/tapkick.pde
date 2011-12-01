@@ -20,10 +20,11 @@
 
 //--- Includes
 #include "tapkick.h"
-#include <OneWire.h>
+
+#include "OneWire.h"
 #include "SoftwareSerial.h"
 #include "SparkFunSerLCD.h"
-#include <Time.h>
+#include "Time.h"
 
 //--- Instantiate Class Objects
 OneWire ds1(TP_PIN_ONEWIRE_TEMP_1);
