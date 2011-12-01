@@ -179,7 +179,7 @@ a {
 
 #form {
 	width: 240px;
-	height: 317px;
+	height: 210px;
 	background: url(../img/box-small.png) top left no-repeat;
 	padding: 10px 30px;
 	margin: 0 auto;
@@ -209,4 +209,21 @@ a {
 #submit {
 	float: left;
 	margin-right: 10px;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+  /* iPhone, Android rules here */
+
+#container {
+        width: 400px;
+        margin: 100px auto 0 auto;
+}
+
+.tap {
+	margin: 0 0px;
+}
+
+#header {
+	background-position: 90% center, top left;
+}
 }

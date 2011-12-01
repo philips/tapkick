@@ -203,14 +203,16 @@ def get_tap(request, tap_number):
     else:
         age_string = "0 days"
     volume = '%s/%sL' % (tap_beer.amount_left, tap_beer.size)
+    ibus = "%s IBUs" % tap_beer.ibu
+    abv = "%s%%" % tap_beer.abv
     result = {
         'level': tap_beer.percent_left(),
         'name': tap_beer.name,
         'amountLeft': tap_beer.cups_left(),
         'age': age_string,
         'volume': volume,
-        'ibu': tap_beer.ibu,
-        'abv': tap_beer.abv}
+        'ibu': ibus,
+        'abv': abv}
      
     data = json.dumps(result)
     return json_response(data)
@@ -278,13 +280,26 @@ def get_formatted_date(date):
     hour = seconds / 60 / 60
     formatted_date = ''
     if week != 0:
-        formatted_date = formatted_date + '%s weeks, ' % week
+        if week == 1:
+            formatted_date = formatted_date + '%s week, ' % week
+        else:
+            formatted_date = formatted_date + '%s weeks, ' % week
     if day != 0:
-        formatted_date = formatted_date + '%s days, ' % day
+        if day == 1:
+            formatted_date = formatted_date + '%s day, ' % day
+        else:
+            formatted_date = formatted_date + '%s days, ' % day
     if hour != 0:
-        formatted_date = formatted_date + '%s hours, ' % hour
+        if hour == 1:
+            formatted_date = formatted_date + '%s hour, ' % hour
+        else:
+            formatted_date = formatted_date + '%s hours, ' % hour
     if min != 0:
-        formatted_date = formatted_date + '%s mins ' % min
+        if min == 1:
+            formatted_date = formatted_date + '%s min ' % min
+        else:
+            formatted_date = formatted_date + '%s mins ' % min
     else:
-        formatted_date = formatted_date + '0 min'
+        formatted_date = formatted_date + '0 mins'
+
     return formatted_date
