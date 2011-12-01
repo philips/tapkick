@@ -17,19 +17,19 @@
             <img src="{{ STATIC_URL }}img/one.png">
             <h2>{{tap1_beer.name}}</h2>
             <h4>{{tap1_beer.cups_left}} beers left</h4>
-			<div class="item">
+			<div class="item age">
 				<div class="item-key">Age:</div>
                 <div class="item-value">{{tap1_beer.start_date|timesince:now}}</div>
 			</div>
-			<div class="item">
+			<div class="item volume">
 				<div class="item-key">Vol:</div>
                 <div class="item-value">{{tap1_beer.amount_left}}/{{tap1_beer.size}}L</div>
 			</div>
-			<div class="item">
+			<div class="item ibu">
 				<div class="item-key">IBU:</div>
                 <div class="item-value">{{tap1_beer.ibu}}</div>
 			</div>
-			<div class="item">
+			<div class="item abv">
 				<div class="item-key">ABV:</div>
                 <div class="item-value">{{tap1_beer.abv}}%</div>
 			</div>
@@ -38,7 +38,7 @@
 	<div class="chart"></div>
     <div class="chart-desc">Consumption Trend (12 people)</div>
     {% if last_to_drink1 %}
-	<div class="person">
+	<div class="person last">
         <img src="{% gravatar_for_email last_to_drink1.user.email 40 %}">
 		<h3>{{ last_to_drink1.user.name }}</h3>
 		<p>Last to Drink<span class="detail">({{ last_to_drink1.time|timesince }} ago)</span></p>
@@ -47,7 +47,7 @@
     {% endif %}
     {% if highest_consumption1 %}
     {% for person in highest_consumption1 %}
-	<div class="person">
+	<div class="person consumption">
         <img src="{% gravatar_for_email person.user__email 40 %}">
 		<h3>{{ person.user__name }}</h3>
 		<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
@@ -56,7 +56,7 @@
     {% endfor %}
     {% endif %}
     {% if fastest_beer1 %}
-	<div class="person">
+	<div class="person fastest">
         <img src="{% gravatar_for_email fastest_beer1.user__email 40 %}">
 		<h3>{{ fastest_beer1.user__name }}</h3>
 		<p>Fastest Beer<span class="detail">({{ fastest_beer1.time|timesince:now }})</span></p>
@@ -77,19 +77,19 @@
 			<img src="{{ STATIC_URL }}img/two.png">
             <h2>{{tap2_beer.name}}</h2>
             <h4>{{tap2_beer.cups_left}} beers left</h4>
-			<div class="item">
+			<div class="item age">
 				<div class="item-key">Age:</div>
                 <div class="item-value">{{tap2_beer.start_date|timesince:now}}</div>
 			</div>
-			<div class="item">
+			<div class="item volume">
 				<div class="item-key">Vol:</div>
                 <div class="item-value">{{tap2_beer.amount_left}}/{{tap2_beer.size}}L</div>
 			</div>
-			<div class="item">
+			<div class="item ibu">
 				<div class="item-key">IBU:</div>
                 <div class="item-value">{{tap2_beer.ibu}}</div>
 			</div>
-			<div class="item">
+			<div class="item abv">
 				<div class="item-key">ABV:</div>
                 <div class="item-value">{{tap2_beer.abv}}%</div>
 			</div>
@@ -98,7 +98,7 @@
 	<div class="chart"></div>
 	<div class="chart-desc">Consumption Trend (12 people)</div>
     {% if last_to_drink2 %}
-	<div class="person">
+	<div class="person last">
         <img src="{% gravatar_for_email last_to_drink2.user.email 40 %}">
 		<h3>{{ last_to_drink2.user.name }}</h3>
 		<p>Last to Drink<span class="detail">({{ last_to_drink2.time|timesince }} ago)</span></p>
@@ -107,7 +107,7 @@
     {% endif %}
     {% if highest_consumption2 %}
     {% for person in highest_consumption2 %}
-	<div class="person">
+	<div class="person consumption">
         <img src="{% gravatar_for_email person.user__email 40 %}">
 		<h3>{{ person.user__name }}</h3>
 		<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
@@ -116,7 +116,7 @@
     {% endfor %}
     {% endif %}
     {% if fastest_beer2 %}
-	<div class="person">
+	<div class="person fastest">
         <img src="{% gravatar_for_email fastest_beer2.user__email 40 %}">
 		<h3>{{ fastest_beer2.user__name }}</h3>
 		<p>Fastest Beer<span class="detail">({{ fastest_beer2.time|timesince:now }})</span></p>
