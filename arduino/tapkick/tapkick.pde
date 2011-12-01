@@ -222,11 +222,11 @@ void setup() {
   attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
 
   //--- Setup Methods
-  closeTaps();
+  lcd.setup();
   setTemps();
   printTemps();
-  lcd.setup();
   lcd.at(3,2,"Welcome to Tapkick");
+  closeTaps();
 }
 
 void loop () {
@@ -260,7 +260,7 @@ void loop () {
     Serial.println();
 
     //--- Reset the flow now that you've printed it
-    //resetFlow();
+    resetFlow();
   }
 
 }
