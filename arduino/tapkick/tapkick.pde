@@ -235,13 +235,15 @@ void loop () {
   
   //--- Turn off Taps and print access
   if(tapState and (now() - startTap >= TAP_DELAY)) {
-    //cli(); // Clear Local Interrupts
 
     //--- Close the taps
     closeTaps();
 
     //--- Set the temps
     setTemps();
+    lcd.empty();
+    printTemps();
+    lcd.at(3,2,"Rackers Love Beer");
 
     //--- Print out the data for the access period
     for (int i=0; i<5; i++) {
@@ -259,13 +261,6 @@ void loop () {
 
     //--- Reset the flow now that you've printed it
     //resetFlow();
-
-    //--- Print more info if we want
-    lcd.empty();
-    printTemps();
-    lcd.at(3,2,"Rackers Love Beer");
-
-    //sei(); // Set Enable Interrupts
   }
 
 }
