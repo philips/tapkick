@@ -107,7 +107,7 @@
 #define flow2        21 // D21 Interrupt 2 was D5
 
 //--- Constants
-#define TAP_DELAY 20
+#define TAP_DELAY 10
 #define LCD_ROWS 4
 #define LCD_COLS 20
 #define FLOW_TIMEOUT 20000
