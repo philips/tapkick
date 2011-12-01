@@ -59,12 +59,10 @@ void resetFlow() {
 
 void countFlow1() {
   flow1++;
-  Serial.println('flow1');
 }
 
 void countFlow2() {
   flow2++;
-  Serial.println('flow2');
 }
 
 void readFlow() {
