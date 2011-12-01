@@ -4,10 +4,39 @@ import md5
 
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.db.models import Count, Sum
 from beer.models import User, Beer, Access
+from beer.forms import SearchForm, UserForm
 
+def search(request):
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            user = form.user()
+            return HttpResponseRedirect(reverse(user_edit,
+                       args=[user.rfid]))
+    else:
+        form = SearchForm() # An unbound form
+
+    return render_to_response('search.html', {
+        'form': form,
+        }, context_instance=RequestContext(request))
+
+def user_edit(request, rfid_id):
+    if request.method == 'POST':
+        user = User.objects.get(rfid=rfid_id)
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            user = form.save()
+            return HttpResponseRedirect(reverse(search))
+
+    user = get_object_or_404(User, rfid=rfid_id, private=False)
+    context = {'user': user}
+    return render_to_response(
+            'user_edit.html', context,
+            context_instance=RequestContext(request))
 
 def user_list(request):
     user_list = User.objects.filter(private=False)
@@ -165,13 +194,20 @@ def get_graph_array(beer):
 def get_tap(request, tap_number):
     tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
     now = datetime.datetime.now()
-    age = get_formatted_date(now - tap_beer.start_date)
+    age = (now - tap_beer.start_date).days
+    if age > -1:
+        if age == 1:
+            age_string = "1 day"
+        else:
+            age_string = "%s days" % age
+    else:
+        age_string = "0 days"
     volume = '%s/%sL' % (tap_beer.amount_left, tap_beer.size)
     result = {
         'level': tap_beer.percent_left(),
         'name': tap_beer.name,
         'amountLeft': tap_beer.cups_left(),
-        'age': age,
+        'age': age_string,
         'volume': volume,
         'ibu': tap_beer.ibu,
         'abv': tap_beer.abv}

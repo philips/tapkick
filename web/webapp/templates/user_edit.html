@@ -1,0 +1,28 @@
+{% extends "base_mobile.html" %}
+
+{% block title %}Badge Search{% endblock title %}
+
+{% block container %}
+  <div id="container">
+    <div id="form">
+    <h2>{{ user.name }}</h2>
+      <form method="post">
+        <div class="form-section">
+          {% csrf_token %}
+          <div class="item-key">New Name</div>
+          <div class="form-value"><input id="name" name="name" value="{{user.name}}"></div>
+          <div class="clear"></div>
+        </div>
+        <div class="form-section">
+          <div class="item-key">Gravatar Email</div>
+          <div class="form-value"><input id="email" name="email" value="{{user.email}}"></div>
+          <div class="clear"></div>
+        </div>
+        <div class="form-section submit">
+          <input id="submit" type="image" src="{{ STATIC_URL }}img/save-button.png" />
+          <a href="/">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock container %}
