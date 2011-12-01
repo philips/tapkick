@@ -137,7 +137,6 @@ void openTaps() {
 void closeTaps() {
   tapState = false;
   startTap = now();
-  resetFlow();
   digitalWrite(led, LOW);
   digitalWrite(power, LOW);
 }
@@ -329,9 +328,9 @@ void loop () {
       Serial.print(lastcode[i], HEX);
     }
     Serial.print(":");
-    Serial.print(float(flowCount1)/float(FLOW_CONST));
+    Serial.print(flowCount1/float(FLOW_CONST));
     Serial.print("/");
-    Serial.print(float(flowCount2)/float(FLOW_CONST));
+    Serial.print(flowCount2/float(FLOW_CONST));
     Serial.print("/");
     Serial.print(temperature1);
     Serial.print("/");
