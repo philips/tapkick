@@ -64,7 +64,7 @@
  * SF800
  * http://www.swissflow.com/sf800.html
  *
- * RS = 232O Ohm
+ * RS = 232 Ohm
  * RL = ~2.2 KOhm
  *
  * Red   - RS -> +5V
@@ -93,67 +93,73 @@
 #include "SparkFunSerLCD.h"
 #include <Time.h>
 
-//--- Analog Pins
+//--- Analog Pin Allocations
 // None
 
-//--- Digital Pins
-#define lcdPin       2
-#define power        7
-#define temp1        10 // DS18B20 Transistor
-#define temp2        11 // DS18B20 Transistor
-#define led          12
-#define rfid         19
-#define flow1        20 // D20 is Interrupt 3
-#define flow2        21 // D21 is Interrupt 2
+//--- Digital Pin Allocations
+#define TP_PIN_LCD            2
+#define TP_PIN_RELAY          7
+#define TP_PIN_ONEWIRE_TEMP_1 10 // DS18B20 Transistor
+#define TP_PIN_ONEWIRE_TEMP_2 11 // DS18B20 Transistor
+#define TP_PIN_LED            12
+#define TP_PIN_RFID           19 // Serial 1 from ID-20 reader
+#define TP_PIN_FLOW_METER_1   20 // Interrupt 3
+#define TP_PIN_FLOW_METER_2   21 // Interrupt 2
 
-//--- Constants
+//--- Interrupt Numbers
+#define TP_INTERRUPT_FLOW_METER_1 3 // Pin D20
+#define TP_INTERRUPT_FLOW_METER_2 2 // Pin D21
+
+//--- Tapkick Constants
 #define TAP_DELAY 15
 #define LCD_ROWS 4
 #define LCD_COLS 20
 #define FLOW_CONST 6100
 
 //--- Instantiate Class Objects
-OneWire ds1(temp1);
-OneWire ds2(temp2);
-SparkFunSerLCD lcd(lcdPin, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
+OneWire ds1(TP_PIN_ONEWIRE_TEMP_1);
+OneWire ds2(TP_PIN_ONEWIRE_TEMP_2);
+SparkFunSerLCD lcd(TP_PIN_LCD, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 
 //--- Globals
-bool tapState = false;;
+bool tapState = false;
 time_t startTap = now();
 byte lastcode[6];
-float flowCount1 = 0.0;
-float flowCount2 = 0.0;
+volatile int flow1;
+volatile int flow2;
 float temperature1 = 0.0;
 float temperature2 = 0.0;
 
-//--- Functions
+//--- Tap Functions
 void openTaps() {
   tapState = true;
   startTap = now();
-  digitalWrite(led, HIGH);
-  digitalWrite(power, HIGH);
+  digitalWrite(TP_PIN_LED, HIGH);
+  digitalWrite(TP_PIN_RELAY, HIGH);
 }
 
 void closeTaps() {
   tapState = false;
   startTap = now();
-  digitalWrite(led, LOW);
-  digitalWrite(power, LOW);
+  digitalWrite(TP_PIN_LED, LOW);
+  digitalWrite(TP_PIN_RELAY, LOW);
 }
 
+//--- Flow Functions
 void resetFlow() {
-  flowCount1 = 0.0;
-  flowCount2 = 0.0;
+  flow1 = 0;
+  flow2 = 0;
 }
 
 void countFlow1() {
-  flowCount1 += 1.0;
+  flow1++;
 }
 
 void countFlow2() {
-  flowCount2 += 1.0;
+  flow2++;
 }
 
+//--- Temperature Functions
 float getTemp(OneWire ds){
   // from http://bildr.org/2011/07/ds18b20-arduino/
   // returns the temperature from one DS18S20 in DEG Celsius
@@ -199,9 +205,25 @@ float getTemp(OneWire ds){
   float TemperatureSum = tempRead / 16;
 
   return TemperatureSum;
-
 }
 
+void setTemps() {
+  //--- Get the temperature in Celcius
+  temperature1 = getTemp(ds1);
+  temperature2 = getTemp(ds2);
+}
+
+void printTemps() {
+  //--- Print the temps to the lcd
+  lcd.at(1,1,"Temp1:");
+  lcd.at(1,7,int(temperature1));
+  lcd.at(1,9,"C");
+  lcd.at(1,11,"Temp2:");
+  lcd.at(1,17,int(temperature2));
+  lcd.at(1,19,"C");
+}
+
+//--- RFID Functions
 void getRFID() {
   // RFID reader ID-20 for Arduino
   //
@@ -270,53 +292,41 @@ void getRFID() {
   }
 }
 
-void setTemps() {
-  //--- Get the temperature in Celcius
-  temperature1 = getTemp(ds1);
-  temperature2 = getTemp(ds2);
-}
-
-void printTemps() {
-  //--- Print the temps to the lcd
-  lcd.at(1,1,"Temp1:");
-  lcd.at(1,7,int(temperature1));
-  lcd.at(1,9,"C");
-  lcd.at(1,11,"Temp2:");
-  lcd.at(1,17,int(temperature2));
-  lcd.at(1,19,"C");
-}
-
+//--- Main Functions
 void setup() {
-  Serial.begin(9600);    // connect to the serial port
+  //--- Set up serial ports
+  Serial.begin(9600);    // connect to the serial port (usb)
   Serial1.begin(9600);   // connect to the rfid
 
   //--- Set up pins
-  pinMode(flow1, INPUT);
-  pinMode(flow2, INPUT);
-  pinMode(led, OUTPUT);
-  pinMode(power, OUTPUT);
-  closeTaps();
+  pinMode(TP_PIN_LED, OUTPUT);
+  pinMode(TP_PIN_RELAY, OUTPUT);
+  pinMode(TP_PIN_FLOW_METER_1, INPUT);
+  pinMode(TP_PIN_FLOW_METER_2, INPUT);
 
   //--- Attach interrupts
-  digitalWrite(flow1, HIGH);
-  attachInterrupt(3, countFlow1, RISING);
-  digitalWrite(flow2, HIGH);
-  attachInterrupt(2, countFlow2, RISING);
+  // Need to set these HIGH so they won't just tick away
+  digitalWrite(TP_PIN_FLOW_METER_1, HIGH);
+  digitalWrite(TP_PIN_FLOW_METER_2, HIGH);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
 
-  //--- Set up the LCD
-  lcd.setup();
-
-  //--- Set the temps
+  //--- Setup Methods
+  closeTaps();
   setTemps();
   printTemps();
+  lcd.setup();
+  lcd.at(3,2,"Welcome to Tapkick");
 }
 
 void loop () {
-
+  
   getRFID();
-
+  
   //--- Turn off Taps and print access
   if(tapState and (now() - startTap >= TAP_DELAY)) {
+    cli(); // Clear Local Interrupts
+
     //--- Close the taps
     closeTaps();
 
@@ -328,9 +338,9 @@ void loop () {
       Serial.print(lastcode[i], HEX);
     }
     Serial.print(":");
-    Serial.print(flowCount1/float(FLOW_CONST));
+    Serial.print(float(flow1));//float(FLOW_CONST));
     Serial.print("/");
-    Serial.print(flowCount2/float(FLOW_CONST));
+    Serial.print(float(flow2));//float(FLOW_CONST));
     Serial.print("/");
     Serial.print(temperature1);
     Serial.print("/");
@@ -338,11 +348,14 @@ void loop () {
     Serial.println();
 
     //--- Reset the flow now that you've printed it
-    resetFlow();
+    //resetFlow();
 
     //--- Print more info if we want
+    lcd.empty();
     printTemps();
     lcd.at(3,2,"Rackers Love Beer");
+
+    sei(); // Set Enable Interrupts
   }
 
 }
