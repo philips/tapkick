@@ -5,11 +5,10 @@
 {% block container %}
   <div id="container">
     <div id="form">
-      <h2>Enter Badge Number or Name</h2>
+      <h2>Enter Badge Number/Name</h2>
       <form method="post">
         {% csrf_token %}
         <div class="form-section">
-          <div class="item-key">Number/Name</div>
           <div class="form-value"><input id="user_name" name="user_name"></div>
           <div class="clear"></div>
         </div>
