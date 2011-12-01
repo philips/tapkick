@@ -8,7 +8,7 @@ class SearchForm(forms.Form):
     user_name = forms.IntegerField()
 
     def user(self):
-        u = User.objects.filter(name__icontains = self.cleaned_data["user_name"])
+        u = User.objects.filter(name = self.cleaned_data["user_name"])
         if u and len(u) == 1:
             return u[0]
         else:
