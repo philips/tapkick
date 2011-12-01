@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     person_list = ['chris']
 
-    for person in person_list:
+    for person in xrange(0, 600):
         print 'Tap an rfid card for %s' % person
 
         # Continuously check the serial port
