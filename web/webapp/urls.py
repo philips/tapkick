@@ -7,7 +7,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^users/(?P<rfid_id>\w+)/$', 'beer.views.user_detail', name='user_detail'),
+    url(r'^users/(?P<rfid_id>\w+)/edit$', 'beer.views.user_edit', name='user_edit'),
     url(r'^users/$', 'beer.views.user_list', name='user_list'),
+    url(r'^search/$', 'beer.views.search', name='user_search'),
     url(r'^$', 'beer.views.front_page', name='front_page'),
 
     url(r'^admin/', include(admin.site.urls)),

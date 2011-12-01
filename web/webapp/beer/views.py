@@ -4,10 +4,39 @@ import md5
 
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.db.models import Count, Sum
 from beer.models import User, Beer, Access
+from beer.forms import SearchForm, UserForm
 
+def search(request):
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            user = form.user()
+            return HttpResponseRedirect(reverse(user_edit,
+                       args=[user.rfid]))
+    else:
+        form = SearchForm() # An unbound form
+
+    return render_to_response('search.html', {
+        'form': form,
+        }, context_instance=RequestContext(request))
+
+def user_edit(request, rfid_id):
+    if request.method == 'POST':
+        user = User.objects.get(rfid=rfid_id)
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            user = form.save()
+            return HttpResponseRedirect(reverse(search))
+
+    user = get_object_or_404(User, rfid=rfid_id, private=False)
+    context = {'user': user}
+    return render_to_response(
+            'user_edit.html', context,
+            context_instance=RequestContext(request))
 
 def user_list(request):
     user_list = User.objects.filter(private=False)

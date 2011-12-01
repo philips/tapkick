@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Badge Search{% endblock title %}
+
+{% block container %}
+  <div id="container">
+    <div id="form">
+      <h2>Enter Badge Number</h2>
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-section">
+          <div class="item-key">Number</div>
+          <div class="form-value"><input id="user_name" name="user_name"></div>
+          <div class="clear"></div>
+        </div>
+        <div class="form-section submit">
+          <input id="submit" type="image" src="{{ STATIC_URL }}img/search-button.png" />
+          <a href="{% url user_list %}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  <div class="clear"></div>
+  </div>
+{% endblock container %}
