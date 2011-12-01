@@ -1,5 +1,16 @@
 [
     {
+        "pk": 1, 
+        "model": "beer.user", 
+        "fields": {
+            "receive_alerts": true, 
+            "rfid": "450B8BD78", 
+            "name": "Felix Sargent", 
+            "private": false, 
+            "email": "felix.sargent@gmail.com"
+        }
+    }, 
+    {
         "pk": 2, 
         "model": "beer.user", 
         "fields": {
