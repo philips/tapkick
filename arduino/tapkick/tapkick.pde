@@ -103,14 +103,13 @@
 #define temp2        11 // DS18B20 Transistor
 #define led          12
 #define rfid         19
-#define flow1        20 // D20 Interrupt 3 was D4
-#define flow2        21 // D21 Interrupt 2 was D5
+#define flow1        20 // D20 is Interrupt 3
+#define flow2        21 // D21 is Interrupt 2
 
 //--- Constants
 #define TAP_DELAY 10
 #define LCD_ROWS 4
 #define LCD_COLS 20
-#define FLOW_TIMEOUT 20000
 #define FLOW_CONST 6100
 
 //--- Instantiate Class Objects
