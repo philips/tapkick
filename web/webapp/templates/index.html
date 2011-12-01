@@ -46,14 +46,12 @@
     </div>
     {% endif %}
     {% if highest_consumption1 %}
-    {% for person in highest_consumption1 %}
 	<div class="person consumption">
-        <img src="{% gravatar_for_email person.user__email 40 %}">
-		<h3>{{ person.user__name }}</h3>
-		<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
+        <img src="{% gravatar_for_email highest_consumption1.user__email 40 %}">
+		<h3>{{ highest_consumption1.user__name }}</h3>
+		<p>Highest Consumption<span class="detail">({{ highest_consumption1.total }} beers)</span></p>
 		<div class="clear"></div>
 	</div>
-    {% endfor %}
     {% endif %}
     {% if fastest_beer1 %}
 	<div class="person fastest">
@@ -106,14 +104,12 @@
     </div>
     {% endif %}
     {% if highest_consumption2 %}
-    {% for person in highest_consumption2 %}
 	<div class="person consumption">
-        <img src="{% gravatar_for_email person.user__email 40 %}">
-		<h3>{{ person.user__name }}</h3>
-		<p>Highest Consumption<span class="detail">({{ person.total }} beers)</span></p>
+        <img src="{% gravatar_for_email highest_consumption2.user__email 40 %}">
+		<h3>{{ highest_consumption2.user__name }}</h3>
+		<p>Highest Consumption<span class="detail">({{ highest_consumption2.total }} beers)</span></p>
 		<div class="clear"></div>
 	</div>
-    {% endfor %}
     {% endif %}
     {% if fastest_beer2 %}
 	<div class="person fastest">
