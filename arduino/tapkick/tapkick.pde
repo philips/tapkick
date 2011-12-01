@@ -64,7 +64,7 @@
  * SF800
  * http://www.swissflow.com/sf800.html
  *
- * RS = 232O Ohm
+ * RS = 232 Ohm
  * RL = ~2.2 KOhm
  *
  * Red   - RS -> +5V
@@ -98,13 +98,17 @@
 
 //--- Digital Pins
 #define lcdPin       2
-#define power        7
-#define temp1        10 // DS18B20 Transistor
-#define temp2        11 // DS18B20 Transistor
-#define led          12
-#define rfid         19
-#define flow1        20 // D20 is Interrupt 3
-#define flow2        21 // D21 is Interrupt 2
+#define powerPin     7
+#define tempPin1     10 // DS18B20 Transistor
+#define tempPin2     11 // DS18B20 Transistor
+#define ledPin       12
+#define rfidPin      19 // Serial 1
+#define flowPin1     20 // Interrupt 3
+#define flowPin2     21 // Interrupt 2
+
+//--- Interrupts
+#define flowInterrupt1  3  // Pin D20
+#define flowInterrupt2  2  // Pin D21
 
 //--- Constants
 #define TAP_DELAY 15
@@ -113,8 +117,8 @@
 #define FLOW_CONST 6100
 
 //--- Instantiate Class Objects
-OneWire ds1(temp1);
-OneWire ds2(temp2);
+OneWire ds1(tempPin1);
+OneWire ds2(tempPin2);
 SparkFunSerLCD lcd(lcdPin, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 
 //--- Globals
@@ -130,15 +134,15 @@ float temperature2 = 0.0;
 void openTaps() {
   tapState = true;
   startTap = now();
-  digitalWrite(led, HIGH);
-  digitalWrite(power, HIGH);
+  digitalWrite(ledPin, HIGH);
+  digitalWrite(powerPin, HIGH);
 }
 
 void closeTaps() {
   tapState = false;
   startTap = now();
-  digitalWrite(led, LOW);
-  digitalWrite(power, LOW);
+  digitalWrite(ledPin, LOW);
+  digitalWrite(powerPin, LOW);
 }
 
 void resetFlow() {
@@ -291,22 +295,20 @@ void setup() {
   Serial1.begin(9600);   // connect to the rfid
 
   //--- Set up pins
-  pinMode(flow1, INPUT);
-  pinMode(flow2, INPUT);
-  pinMode(led, OUTPUT);
-  pinMode(power, OUTPUT);
-  closeTaps();
+  pinMode(ledPin, OUTPUT);
+  pinMode(powerPin, OUTPUT);
 
   //--- Attach interrupts
-  digitalWrite(flow1, HIGH);
-  attachInterrupt(3, countFlow1, RISING);
-  digitalWrite(flow2, HIGH);
-  attachInterrupt(2, countFlow2, RISING);
+  attachInterrupt(flowInterrupt1, countFlow1, RISING);
+  attachInterrupt(flowInterrupt2, countFlow2, RISING);
+
+  //--- Close taps
+  closeTaps();
 
   //--- Set up the LCD
   lcd.setup();
 
-  //--- Set the temps
+  //--- Set the and print the temps
   setTemps();
   printTemps();
 }
