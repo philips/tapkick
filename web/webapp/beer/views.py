@@ -203,14 +203,16 @@ def get_tap(request, tap_number):
     else:
         age_string = "0 days"
     volume = '%s/%sL' % (tap_beer.amount_left, tap_beer.size)
+    ibus = "%s IBUs" % tap_beer.ibu
+    abv = "%s%%" % tap_beer.abv
     result = {
         'level': tap_beer.percent_left(),
         'name': tap_beer.name,
         'amountLeft': tap_beer.cups_left(),
         'age': age_string,
         'volume': volume,
-        'ibu': tap_beer.ibu,
-        'abv': tap_beer.abv}
+        'ibu': ibus,
+        'abv': abv}
      
     data = json.dumps(result)
     return json_response(data)
