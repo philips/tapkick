@@ -98,13 +98,13 @@
 
 //--- Digital Pins
 #define lcdPin       2
-#define flow1        4
-#define flow2        5
 #define power        7
 #define temp1        10 // DS18B20 Transistor
 #define temp2        11 // DS18B20 Transistor
 #define led          12
 #define rfid         19
+#define flow1        20 // D20 Interrupt 3 was D4
+#define flow2        21 // D21 Interrupt 2 was D5
 
 //--- Constants
 #define TAP_DELAY 20
@@ -158,6 +158,14 @@ void getFlow() {
   if (flowDur2 > 0){
     flowCount2++;
   }
+}
+
+void countFlow1() {
+  flowCount1++;
+}
+
+void countFlow2() {
+  flowCount2++;
 }
 
 float getTemp(OneWire ds){
@@ -303,6 +311,12 @@ void setup() {
   pinMode(power, OUTPUT);
   closeTaps();
 
+  //--- Attach interrupts
+  //digitalWrite(flow1, HIGH);
+  attachInterrupt(3, countFlow1, RISING);
+  //digitalWrite(flow2, HIGH);
+  attachInterrupt(2, countFlow2, RISING);
+
   //--- Set up the LCD
   lcd.setup();
 
@@ -314,7 +328,7 @@ void setup() {
 void loop () {
 
   getRFID();
-  getFlow();
+  //getFlow();
 
   //--- Turn off Taps and print access
   if(tapState and (now() - startTap >= TAP_DELAY)) {
@@ -329,9 +343,9 @@ void loop () {
       Serial.print(lastcode[i], HEX);
     }
     Serial.print(":");
-    Serial.print(float(flow1)/float(FLOW_CONST));
+    Serial.print(float(flowCount1)/float(FLOW_CONST));
     Serial.print("/");
-    Serial.print(float(flow2)/float(FLOW_CONST));
+    Serial.print(float(flowCount2)/float(FLOW_CONST));
     Serial.print("/");
     Serial.print(temperature1);
     Serial.print("/");
