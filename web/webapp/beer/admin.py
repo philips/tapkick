@@ -14,6 +14,7 @@ class BeerAdmin(admin.ModelAdmin):
                     'start_date', 'end_date', 'tap_number', 'active')
     list_filter = ('name',)
     prepopulated_fields = {'slug': ('name', )}
+    search_fields = ('name',)
 
 admin.site.register(Beer, BeerAdmin)
 
@@ -22,6 +23,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('name', 'rfid', 'email', 'receive_alerts', 'private')
     list_editable = ('receive_alerts', 'private')
     list_filter = ('receive_alerts', 'private')
+    search_fields = ('name',)
 
 admin.site.register(User, UserAdmin)
 
