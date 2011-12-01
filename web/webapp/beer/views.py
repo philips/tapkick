@@ -194,13 +194,20 @@ def get_graph_array(beer):
 def get_tap(request, tap_number):
     tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
     now = datetime.datetime.now()
-    age = get_formatted_date(now - tap_beer.start_date)
+    age = (now - tap_beer.start_date).days
+    if age > -1:
+        if age == 1:
+            age_string = "1 day"
+        else:
+            age_string = "%s days" % age
+    else:
+        age_string = "0 days"
     volume = '%s/%sL' % (tap_beer.amount_left, tap_beer.size)
     result = {
         'level': tap_beer.percent_left(),
         'name': tap_beer.name,
         'amountLeft': tap_beer.cups_left(),
-        'age': age,
+        'age': age_string,
         'volume': volume,
         'ibu': tap_beer.ibu,
         'abv': tap_beer.abv}
