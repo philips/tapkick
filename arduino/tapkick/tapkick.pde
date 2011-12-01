@@ -59,10 +59,20 @@ void resetFlow() {
 
 void countFlow1() {
   flow1++;
+  Serial.println('flow1');
 }
 
 void countFlow2() {
   flow2++;
+  Serial.println('flow2');
+}
+
+void readFlow() {
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
+  delay(TAP_DELAY * 1000);
+  detachInterrupt(TP_INTERRUPT_FLOW_METER_1);
+  detachInterrupt(TP_INTERRUPT_FLOW_METER_2);
 }
 
 //--- Temperature Functions
@@ -214,8 +224,6 @@ void setup() {
   // Need to set these HIGH so they won't just tick away
   digitalWrite(TP_PIN_FLOW_METER_1, HIGH);
   digitalWrite(TP_PIN_FLOW_METER_2, HIGH);
-  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
-  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
 
   //--- Setup Methods
   lcd.setup();
@@ -233,7 +241,7 @@ void loop () {
   if(tapState) {
 
     //--- Delay then close the taps
-    delay(TAP_DELAY * 1000);
+    readFlow();
     closeTaps();
 
     //--- Set the temps
