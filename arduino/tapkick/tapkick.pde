@@ -24,7 +24,6 @@
 #include "OneWire.h"
 #include "SoftwareSerial.h"
 #include "SparkFunSerLCD.h"
-#include "Time.h"
 
 //--- Instantiate Class Objects
 OneWire ds1(TP_PIN_ONEWIRE_TEMP_1);
@@ -33,7 +32,6 @@ SparkFunSerLCD lcd(TP_PIN_LCD, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 
 //--- Globals
 bool tapState = false;
-time_t startTap = now();
 byte lastcode[6];
 volatile int flow1;
 volatile int flow2;
@@ -43,14 +41,12 @@ float temperature2 = 0.0;
 //--- Tap Functions
 void openTaps() {
   tapState = true;
-  startTap = now();
   digitalWrite(TP_PIN_LED, HIGH);
   digitalWrite(TP_PIN_RELAY, HIGH);
 }
 
 void closeTaps() {
   tapState = false;
-  startTap = now();
   digitalWrite(TP_PIN_LED, LOW);
   digitalWrite(TP_PIN_RELAY, LOW);
 }
@@ -234,9 +230,10 @@ void loop () {
   getRFID();
   
   //--- Turn off Taps and print access
-  if(tapState and (now() - startTap >= TAP_DELAY)) {
+  if(tapState) {
 
-    //--- Close the taps
+    //--- Delay then close the taps
+    delay(TAP_DELAY * 1000);
     closeTaps();
 
     //--- Set the temps
