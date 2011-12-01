@@ -93,40 +93,40 @@
 #include "SparkFunSerLCD.h"
 #include <Time.h>
 
-//--- Analog Pins
+//--- Analog Pin Allocations
 // None
 
-//--- Digital Pins
-#define lcdPin       2
-#define powerPin     7
-#define tempPin1     10 // DS18B20 Transistor
-#define tempPin2     11 // DS18B20 Transistor
-#define ledPin       12
-#define rfidPin      19 // Serial 1
-#define flowPin1     20 // Interrupt 3
-#define flowPin2     21 // Interrupt 2
+//--- Digital Pin Allocations
+#define TP_PIN_LCD            2
+#define TP_PIN_RELAY          7
+#define TP_PIN_ONEWIRE_TEMP_1 10 // DS18B20 Transistor
+#define TP_PIN_ONEWIRE_TEMP_2 11 // DS18B20 Transistor
+#define TP_PIN_LED            12
+#define TP_PIN_RFID           19 // Serial 1 from ID-20 reader
+#define TP_PIN_FLOW_METER_1   20 // Interrupt 3
+#define TP_PIN_FLOW_METER_2   21 // Interrupt 2
 
-//--- Interrupts
-#define flowInterrupt1  3  // Pin D20
-#define flowInterrupt2  2  // Pin D21
+//--- Interrupt Numbers
+#define TP_INTERRUPT_FLOW_METER_1 3 // Pin D20
+#define TP_INTERRUPT_FLOW_METER_2 2 // Pin D21
 
-//--- Constants
-#define TAP_DELAY 15
+//--- Tapkick Constants
+#define TAP_DELAY 5
 #define LCD_ROWS 4
 #define LCD_COLS 20
 #define FLOW_CONST 6100
 
 //--- Instantiate Class Objects
-OneWire ds1(tempPin1);
-OneWire ds2(tempPin2);
-SparkFunSerLCD lcd(lcdPin, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
+OneWire ds1(TP_PIN_ONEWIRE_TEMP_1);
+OneWire ds2(TP_PIN_ONEWIRE_TEMP_2);
+SparkFunSerLCD lcd(TP_PIN_LCD, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 
 //--- Globals
 bool tapState = false;;
 time_t startTap = now();
 byte lastcode[6];
-float flowCount1 = 0.0;
-float flowCount2 = 0.0;
+unsigned long volatile flow1 = 0;
+unsigned long volatile flow2 = 0;
 float temperature1 = 0.0;
 float temperature2 = 0.0;
 
@@ -134,28 +134,28 @@ float temperature2 = 0.0;
 void openTaps() {
   tapState = true;
   startTap = now();
-  digitalWrite(ledPin, HIGH);
-  digitalWrite(powerPin, HIGH);
+  digitalWrite(TP_PIN_LED, HIGH);
+  digitalWrite(TP_PIN_RELAY, HIGH);
 }
 
 void closeTaps() {
   tapState = false;
   startTap = now();
-  digitalWrite(ledPin, LOW);
-  digitalWrite(powerPin, LOW);
+  digitalWrite(TP_PIN_LED, LOW);
+  digitalWrite(TP_PIN_RELAY, LOW);
 }
 
 void resetFlow() {
-  flowCount1 = 0.0;
-  flowCount2 = 0.0;
+  flow1 = 0;
+  flow2 = 0;
 }
 
 void countFlow1() {
-  flowCount1 += 1.0;
+  flow1++;
 }
 
 void countFlow2() {
-  flowCount2 += 1.0;
+  flow2++;
 }
 
 float getTemp(OneWire ds){
@@ -291,26 +291,29 @@ void printTemps() {
 }
 
 void setup() {
-  Serial.begin(9600);    // connect to the serial port
+  //--- Set up serial ports
+  Serial.begin(9600);    // connect to the serial port (usb)
   Serial1.begin(9600);   // connect to the rfid
 
   //--- Set up pins
-  pinMode(ledPin, OUTPUT);
-  pinMode(powerPin, OUTPUT);
+  pinMode(TP_PIN_LED, OUTPUT);
+  pinMode(TP_PIN_RELAY, OUTPUT);
+  pinMode(TP_PIN_FLOW_METER_1, INPUT);
+  pinMode(TP_PIN_FLOW_METER_2, INPUT);
 
   //--- Attach interrupts
-  attachInterrupt(flowInterrupt1, countFlow1, RISING);
-  attachInterrupt(flowInterrupt2, countFlow2, RISING);
+  // Need to set these HIGH so they won't just tick away
+  digitalWrite(TP_PIN_FLOW_METER_1, HIGH);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
+  digitalWrite(TP_PIN_FLOW_METER_2, HIGH);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
 
-  //--- Close taps
+  //--- Setup Methods
   closeTaps();
-
-  //--- Set up the LCD
   lcd.setup();
-
-  //--- Set the and print the temps
   setTemps();
   printTemps();
+  lcd.at(3,2,"Welcome to Tapkick");
 }
 
 void loop () {
@@ -330,9 +333,9 @@ void loop () {
       Serial.print(lastcode[i], HEX);
     }
     Serial.print(":");
-    Serial.print(flowCount1/float(FLOW_CONST));
+    Serial.print(flow1);//float(FLOW_CONST));
     Serial.print("/");
-    Serial.print(flowCount2/float(FLOW_CONST));
+    Serial.print(flow2);//float(FLOW_CONST));
     Serial.print("/");
     Serial.print(temperature1);
     Serial.print("/");
@@ -340,9 +343,10 @@ void loop () {
     Serial.println();
 
     //--- Reset the flow now that you've printed it
-    resetFlow();
+    //resetFlow();
 
     //--- Print more info if we want
+    lcd.empty();
     printTemps();
     lcd.at(3,2,"Rackers Love Beer");
   }
