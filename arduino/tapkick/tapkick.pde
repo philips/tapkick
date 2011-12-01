@@ -65,14 +65,6 @@ void countFlow2() {
   flow2++;
 }
 
-void readFlow() {
-  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
-  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
-  delay(TAP_DELAY * 1000);
-  detachInterrupt(TP_INTERRUPT_FLOW_METER_1);
-  detachInterrupt(TP_INTERRUPT_FLOW_METER_2);
-}
-
 //--- Temperature Functions
 float getTemp(OneWire ds){
   // from http://bildr.org/2011/07/ds18b20-arduino/
@@ -222,6 +214,8 @@ void setup() {
   // Need to set these HIGH so they won't just tick away
   digitalWrite(TP_PIN_FLOW_METER_1, HIGH);
   digitalWrite(TP_PIN_FLOW_METER_2, HIGH);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
 
   //--- Setup Methods
   lcd.setup();
@@ -239,7 +233,7 @@ void loop () {
   if(tapState) {
 
     //--- Delay then close the taps
-    readFlow();
+    delay(TAP_DELAY * 1000);
     closeTaps();
 
     //--- Set the temps
