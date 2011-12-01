@@ -148,18 +148,6 @@ void resetFlow() {
   flowCount2 = 0.0;
 }
 
-void getFlow() {
-  // @todo may need to use attachInterrupt(0, callback, RISING) to do this
-  unsigned long flowDur1 = pulseIn(flow1, HIGH, FLOW_TIMEOUT);
-  unsigned long flowDur2 = pulseIn(flow2, HIGH, FLOW_TIMEOUT);
-  if (flowDur1 > 0){
-    flowCount1++;
-  }
-  if (flowDur2 > 0){
-    flowCount2++;
-  }
-}
-
 void countFlow1() {
   flowCount1++;
 }
@@ -328,7 +316,6 @@ void setup() {
 void loop () {
 
   getRFID();
-  //getFlow();
 
   //--- Turn off Taps and print access
   if(tapState and (now() - startTap >= TAP_DELAY)) {
