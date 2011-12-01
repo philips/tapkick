@@ -125,8 +125,8 @@ SparkFunSerLCD lcd(TP_PIN_LCD, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 bool tapState = false;;
 time_t startTap = now();
 byte lastcode[6];
-unsigned long volatile flow1 = 0;
-unsigned long volatile flow2 = 0;
+volatile unsigned long flow1;
+volatile unsigned long flow2;
 float temperature1 = 0.0;
 float temperature2 = 0.0;
 
@@ -156,6 +156,16 @@ void countFlow1() {
 
 void countFlow2() {
   flow2++;
+}
+
+void attachFlow() {
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
+  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
+}
+
+void detachFlow() {
+  detachInterrupt(TP_INTERRUPT_FLOW_METER_1);
+  detachInterrupt(TP_INTERRUPT_FLOW_METER_2);
 }
 
 float getTemp(OneWire ds){
@@ -304,9 +314,7 @@ void setup() {
   //--- Attach interrupts
   // Need to set these HIGH so they won't just tick away
   digitalWrite(TP_PIN_FLOW_METER_1, HIGH);
-  attachInterrupt(TP_INTERRUPT_FLOW_METER_1, countFlow1, RISING);
   digitalWrite(TP_PIN_FLOW_METER_2, HIGH);
-  attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
 
   //--- Setup Methods
   closeTaps();
@@ -314,6 +322,7 @@ void setup() {
   setTemps();
   printTemps();
   lcd.at(3,2,"Welcome to Tapkick");
+  attachFlow();
 }
 
 void loop () {
@@ -322,6 +331,8 @@ void loop () {
 
   //--- Turn off Taps and print access
   if(tapState and (now() - startTap >= TAP_DELAY)) {
+    detachFlow();
+
     //--- Close the taps
     closeTaps();
 
@@ -333,9 +344,9 @@ void loop () {
       Serial.print(lastcode[i], HEX);
     }
     Serial.print(":");
-    Serial.print(flow1);//float(FLOW_CONST));
+    Serial.print(float(flow1));//float(FLOW_CONST));
     Serial.print("/");
-    Serial.print(flow2);//float(FLOW_CONST));
+    Serial.print(float(flow2));//float(FLOW_CONST));
     Serial.print("/");
     Serial.print(temperature1);
     Serial.print("/");
@@ -343,12 +354,14 @@ void loop () {
     Serial.println();
 
     //--- Reset the flow now that you've printed it
-    //resetFlow();
+    resetFlow();
 
     //--- Print more info if we want
     lcd.empty();
     printTemps();
     lcd.at(3,2,"Rackers Love Beer");
+
+    attachFlow();
   }
 
 }
