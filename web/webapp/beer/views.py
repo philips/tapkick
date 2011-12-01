@@ -1,5 +1,6 @@
 import datetime
 import json
+import md5
 
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
@@ -101,7 +102,9 @@ def get_highest_consumption(user_amount):
         else:
             break
 
-    return highest_consumption
+    if highest_consumption:
+        return highest_consumption[0]
+    return None
 
 
 def get_fastest_beer(user_time):
@@ -128,35 +131,124 @@ def get_fastest_beer(user_time):
         return access[0]
     return None
 
-
+# For ajax(json) #
 def json_response(data, code=200, mimetype='application/json'):
     resp = HttpResponse(data, mimetype)
     resp.code = code
     return resp
 
-
+# values, total
 def get_graph(request, tap_number):
     tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
     tap_graph = get_graph_array(tap_beer)
-    data = json.dumps(tap_graph)
+    user_list = Access.objects.filter(beer=tap_beer).values('user').annotate(Count('user')).order_by()
+    result = {
+        'values': tap_graph,
+        'total': len(user_list)}
+    data = json.dumps(result)
     return json_response(data)
 
 
 def get_graph_array(beer):
-        array = []
-        select_data = {"d": "strftime('%%Y-%%m-%%dT%%H:00:00.000', time)"}
-        tap_counts = Access.objects.filter(beer=beer).extra(select=select_data).values('d').annotate(Count('user')).order_by()
-        if tap_counts:
-            for data in tap_counts:
-                for k, v in data.iteritems():
-                    if k == 'user__count':
-                        array.append(v)
+    array = []
+    select_data = {"d": "strftime('%%Y-%%m-%%dT%%H:00:00.000', time)"}
+    tap_counts = Access.objects.filter(beer=beer).extra(select=select_data).values('d').annotate(Count('user')).order_by()
+    if tap_counts:
+        for data in tap_counts:
+            for k, v in data.iteritems():
+                if k == 'user__count':
+                    array.append(v)
 
-        return array
+    return array
 
-
+# level, name, amout_left, age, volume, ibu, abv
 def get_tap(request, tap_number):
     tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
-    percent_left = tap_beer.percent_left()
-    data = json.dumps(percent_left)
+    now = datetime.datetime.now()
+    age = get_formatted_date(now - tap_beer.start_date)
+    volume = '%s/%sL' % (tap_beer.amount_left, tap_beer.size)
+    result = {
+        'level': tap_beer.percent_left(),
+        'name': tap_beer.name,
+        'amountLeft': tap_beer.cups_left(),
+        'age': age,
+        'volume': volume,
+        'ibu': tap_beer.ibu,
+        'abv': tap_beer.abv}
+     
+    data = json.dumps(result)
     return json_response(data)
+
+# name, time, gravitar_url
+def get_last(request, tap_number):
+    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
+    drinker_list_tap = Access.objects.filter(beer=tap_beer).order_by('-time')
+    result = {}
+    if drinker_list_tap:
+        last_to_drink = drinker_list_tap[0]
+        now = datetime.datetime.now()
+        time = now - last_to_drink.time
+        time = get_formatted_date(time) + ' ago'
+        result = {
+            'name': last_to_drink.user.name,
+            'time': time,
+            'email': get_url_of_gravitar(last_to_drink.user.email)}
+    data = json.dumps(result)
+    return json_response(data)
+
+# name, amount, gravitar_url
+def get_highest(request, tap_number):
+    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
+    users = Access.objects.filter(beer=tap_beer).values('user', 'user__name',
+        'user__email').order_by('user').annotate(total=Sum('amount')).order_by('-total')
+    highest_user = get_highest_consumption(users)
+    result = {}
+    if highest_user:
+        result = {
+            'name': highest_user['user__name'],
+            'amount': '%s L' % highest_user['total'],
+            'email': get_url_of_gravitar(highest_user['user__email'])}
+    data = json.dumps(result)
+    return json_response(data)
+
+# name, time, gravitar_url
+def get_fastest(request, tap_number):
+    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
+    user_time = Access.objects.filter(beer=tap_beer).values('user',
+        'user__name', 'user__email', 'time').order_by('user', '-time')
+    fastest_beer = get_fastest_beer(user_time)
+
+    result = {}
+    if fastest_beer:
+        time = get_formatted_date(fastest_beer['time'])
+        result = {
+            'name': fastest_beer['user__name'],
+            'time': time,
+            'email': get_url_of_gravitar(fastest_beer['user__email'])}
+    data = json.dumps(result)
+    return json_response(data)
+
+
+def get_url_of_gravitar(email):
+    return 'http://www.gravatar.com/avatar/' + md5.new(email).hexdigest() + '.jpg?s=40'
+
+
+def get_formatted_date(date):
+    days = date.days
+    day = days % 7
+    week = days / 7
+    seconds = date.seconds
+    min = seconds / 60 % 60
+    hour = seconds / 60 / 60
+    formatted_date = ''
+    if week != 0:
+        formatted_date = formatted_date + '%s weeks, ' % week
+    if day != 0:
+        formatted_date = formatted_date + '%s days, ' % day
+    if hour != 0:
+        formatted_date = formatted_date + '%s hours, ' % hour
+    if min != 0:
+        formatted_date = formatted_date + '%s mins ' % min
+    else:
+        formatted_date = formatted_date + '0 min'
+    return formatted_date
