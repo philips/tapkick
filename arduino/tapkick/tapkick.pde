@@ -147,11 +147,11 @@ void resetFlow() {
 }
 
 void countFlow1() {
-  flowCount1++;
+  flowCount1 += 1.0;
 }
 
 void countFlow2() {
-  flowCount2++;
+  flowCount2 += 1.0;
 }
 
 float getTemp(OneWire ds){
@@ -298,9 +298,9 @@ void setup() {
   closeTaps();
 
   //--- Attach interrupts
-  //digitalWrite(flow1, HIGH);
+  digitalWrite(flow1, HIGH);
   attachInterrupt(3, countFlow1, RISING);
-  //digitalWrite(flow2, HIGH);
+  digitalWrite(flow2, HIGH);
   attachInterrupt(2, countFlow2, RISING);
 
   //--- Set up the LCD
@@ -342,9 +342,7 @@ void loop () {
 
     //--- Print more info if we want
     printTemps();
-    lcd.at(2,2,"Rackers");
-    lcd.at(3,2,"Love");
-    lcd.at(4,2,"Beer");
+    lcd.at(3,2,"Rackers Love Beer");
   }
 
 }
