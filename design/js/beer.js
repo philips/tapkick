@@ -41,8 +41,6 @@ function setLevel(tapNumber, level) {
 	if (level >= 0 && level <= 100) {
 		x = -3058-((round5(level)/5-1)*-160);
 		//x = level;
-	} else {
-		alert("level out of range (must be 0-100)");
 	}
 		
 	$("#" + tapNumber + " .tank-level").css("background-position", x + "px " + y + "px");
