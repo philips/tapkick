@@ -76,14 +76,14 @@
 /*
  * D-Sub Pinouts
  * 1 - T1   D10
- * 2 - F1   D4
+ * 2 - F1   D20
  * 3 - T2   D11
- * 4 - F2   D5
+ * 4 - F2   D21
  * 5 - 
  * 6 - LCD  D2
  * 7 - RFID D19
- * 8 - +5V
- * 9 - GND
+ * 8 -
+ * 9 -
  *
  */
 
@@ -98,19 +98,18 @@
 
 //--- Digital Pins
 #define lcdPin       2
-#define flow1        4
-#define flow2        5
 #define power        7
 #define temp1        10 // DS18B20 Transistor
 #define temp2        11 // DS18B20 Transistor
 #define led          12
 #define rfid         19
+#define flow1        20 // D20 is Interrupt 3
+#define flow2        21 // D21 is Interrupt 2
 
 //--- Constants
-#define TAP_DELAY 20
+#define TAP_DELAY 10
 #define LCD_ROWS 4
 #define LCD_COLS 20
-#define FLOW_TIMEOUT 20000
 #define FLOW_CONST 6100
 
 //--- Instantiate Class Objects
@@ -148,16 +147,12 @@ void resetFlow() {
   flowCount2 = 0.0;
 }
 
-void getFlow() {
-  // @todo may need to use attachInterrupt(0, callback, RISING) to do this
-  unsigned long flowDur1 = pulseIn(flow1, HIGH, FLOW_TIMEOUT);
-  unsigned long flowDur2 = pulseIn(flow2, HIGH, FLOW_TIMEOUT);
-  if (flowDur1 > 0){
-    flowCount1++;
-  }
-  if (flowDur2 > 0){
-    flowCount2++;
-  }
+void countFlow1() {
+  flowCount1++;
+}
+
+void countFlow2() {
+  flowCount2++;
 }
 
 float getTemp(OneWire ds){
@@ -303,6 +298,12 @@ void setup() {
   pinMode(power, OUTPUT);
   closeTaps();
 
+  //--- Attach interrupts
+  //digitalWrite(flow1, HIGH);
+  attachInterrupt(3, countFlow1, RISING);
+  //digitalWrite(flow2, HIGH);
+  attachInterrupt(2, countFlow2, RISING);
+
   //--- Set up the LCD
   lcd.setup();
 
@@ -314,7 +315,6 @@ void setup() {
 void loop () {
 
   getRFID();
-  getFlow();
 
   //--- Turn off Taps and print access
   if(tapState and (now() - startTap >= TAP_DELAY)) {
@@ -329,9 +329,9 @@ void loop () {
       Serial.print(lastcode[i], HEX);
     }
     Serial.print(":");
-    Serial.print(float(flow1)/float(FLOW_CONST));
+    Serial.print(float(flowCount1)/float(FLOW_CONST));
     Serial.print("/");
-    Serial.print(float(flow2)/float(FLOW_CONST));
+    Serial.print(float(flowCount2)/float(FLOW_CONST));
     Serial.print("/");
     Serial.print(temperature1);
     Serial.print("/");
