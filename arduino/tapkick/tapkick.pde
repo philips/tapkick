@@ -107,7 +107,7 @@
 #define flow2        21 // D21 is Interrupt 2
 
 //--- Constants
-#define TAP_DELAY 10
+#define TAP_DELAY 15
 #define LCD_ROWS 4
 #define LCD_COLS 20
 #define FLOW_CONST 6100
