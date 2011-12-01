@@ -1,0 +1,57 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
+    <title>Tapkick - Rename User</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+
+		$("#submit").click(function(){
+		
+			console.log($("#number").val());
+			window.location = window.location + "/rename/" + $("#number").val();
+		
+		});
+		
+	});  
+    </script>
+    <style>
+    	#container {
+    		width: 100%;
+    	}
+    	
+    	#header {
+    		background-position: 90% center, top left;
+    	}
+    </style>
+</head>
+<body>
+	<div id="header">
+		<ul id="nav">
+            <li><a href="http://openkeg.com">Home</a></li>
+		</ul>
+		<div id="login">
+			<a href="#"></a>
+		</div>
+	</div>
+	<div id="container">
+		<div id="form">
+			<h2>Enter Badge Number</h2>
+			<div class="form-section">
+				<div class="item-key">
+					Number
+				</div>
+				<div class="form-value">
+					<input id="number" name="number">
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="form-section submit">
+				<input id="submit" type="image" src="img/search-button.png" />
+				<a href="http://openkeg.com">Cancel</a>
+			</div>
+			</form>
+        </div>
+	</div>
+</body>
+</html>
