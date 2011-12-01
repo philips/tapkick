@@ -73,20 +73,18 @@ function requestTapData(tapID) {
 		type: 'GET',
 		url: "/get_tap/" + number + "/",
 		success: function(data){
-			
 			console.log(data);
 			setLevel(tapID, data.level*100);
-
+	        $("#" + tapID + " .meta h2").text(data.name);
+	        $("#" + tapID + " .meta h4").text(data.amountLeft + " beers left");
+	        $("#" + tapID + " .meta .age .item-value").text(data.age);
+	        $("#" + tapID + " .meta .volume .item-value").text(data.volume);
+	        $("#" + tapID + " .meta .ibu .item-value").text(data.ibu);
+	        $("#" + tapID + " .meta .abv .item-value").text(data.abv);
 		}
 
 	});
 	
-	$("#" + tapID + " .meta h2").text("name!");
-	$("#" + tapID + " .meta h4").text(data.amountLeft + " beers left");
-	$("#" + tapID + " .meta .age .item-value").text(data.age);
-	$("#" + tapID + " .meta .volume .item-value").text(data.volume);
-	$("#" + tapID + " .meta .ibu .item-value").text(data.ibu);
-	$("#" + tapID + " .meta .abv .item-value").text(data.abv);
 
 }
 

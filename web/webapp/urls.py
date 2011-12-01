@@ -13,6 +13,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^get_graph/(?P<tap_number>\w+)/$', 'beer.views.get_graph'),
     url(r'^get_tap/(?P<tap_number>\w+)/$', 'beer.views.get_tap'),
+    url(r'^get_last/(?P<tap_number>\w+)/$', 'beer.views.get_last'),
+    url(r'^get_highest/(?P<tap_number>\w+)/$', 'beer.views.get_highest'),
+    url(r'^get_fastest/(?P<tap_number>\w+)/$', 'beer.views.get_fastest'),
 )
 
 urlpatterns += staticfiles_urlpatterns()
