@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from beer.models import User
 
 class SearchForm(forms.Form):
-    user_name = forms.IntegerField()
+    user_name = forms.CharField()
 
     def user(self):
         u = User.objects.filter(name = self.cleaned_data["user_name"])
