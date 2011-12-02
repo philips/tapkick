@@ -62,12 +62,12 @@ def front_page(request):
     tap1_beer, c1 = Beer.objects.get_or_create(tap_number=1, active=True)
     if c1:
         tap1_beer.name = "PBR"
-        tap1_beer.slug = "pbr"
+        tap1_beer.slug = "pbr1"
         tap1_beer.save()
     tap2_beer, c2 = Beer.objects.get_or_create(tap_number=2, active=True)
     if c2:
         tap2_beer.name = "PBR"
-        tap2_beer.slug = "pbr"
+        tap2_beer.slug = "pbr2"
         tap2_beer.save()
 
     last_to_drink1 = None
