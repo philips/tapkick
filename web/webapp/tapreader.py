@@ -109,7 +109,7 @@ if __name__ == '__main__':
                     flow[i] = float(data_list[i])
 
                     # BEGIN TEMPORARY FIX FOR BROKEN FLOW METER
-                    if i = 0:
+                    if i == 0:
                         flow[i] = 0.35488  # 0.35488L is 12oz of beer
                     else:
                         flow[i] = 0.0
