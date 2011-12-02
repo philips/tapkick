@@ -1,120 +1,29 @@
-/*
- * Innovations ID-20 Pin-outs
- * http://www.sparkfun.com/products/8628
- * http://www.sparkfun.com/datasheets/Sensors/ID-12-Datasheet.pdf
- *
- *  1 GND - GND
- *  2 RST - +5V
- *  3 ANT - None
- *  4 ANT - None
- *  5 CP  - None
- *  6 NC  - None
- *  7 FS  - GND
- *  8 D1  - None
- *  9 D0  - RX1 Pin D19 on Arduino
- * 10 BZ  - 1Kohm resistor -> LED -> GND
- * 11 5V  - +5V
- *
- */
-
-/*
- * DS18B20 One Wire Digital Temperature Sensor
- * http://www.sparkfun.com/products/245
- * http://datasheets.maxim-ic.com/en/ds/DS18B20.pdf
- *
- * With flat side facing you pins are read 1, 2, 3
- *
- *  1 GND    - GND
- *  2 RX Pin - Pins D10, D11 on Arduino
- *  3 VCC    - +5V
- *
- * Also connect a 4.7kOhm resistor between pin 2 and VCC
- *
- */
-
-/*
- * Solid State Relay Kit
- * http://www.sparkfun.com/products/10684
- *
- * Pins are labelled:
- *
- * GND  - GND
- * CTRL - Pins D6, D7 on Arduino
- * 5V   - +5V
- *
- * The Absolute Maximum Load: 125VAC @ 8A
- *
- * Connect hot wire through load pins.  The relay does
- * not provide power, you must supply your own AC power.
- *
- */
-
-/*
- * Serial Enabled 20x4 LCD - Black on Green 5V
- * http://www.sparkfun.com/products/9568
- *
- * RX  - Pin D2 on Arduino
- * GND - GND
- * VDD - +5V
- *
- */
-
-/*
- * Flow sensors
- * SF800
- * http://www.swissflow.com/sf800.html
- *
- * RS = 232 Ohm
- * RL = ~2.2 KOhm
- *
- * Red   - RS -> +5V
- * Green - Pin D5 on Arduion, connect RL between this line and Red
- * Black - GND
- *
- */
-
-/*
- * D-Sub Pinouts
- * 1 - T1   D10
- * 2 - F1   D20
- * 3 - T2   D11
- * 4 - F2   D21
- * 5 - 
- * 6 - LCD  D2
- * 7 - RFID D19
- * 8 -
- * 9 -
- *
- */
+/**                                                                                                            
+ * Copyright 2011 Chris Gilmer <chris.gilmer@gmail.com>                      
+ *                                                                                                             
+ * This file is part of the Tapkick project.               
+ * For more information on Tapkick, see https://github.com/philips/tapkick                      
+ *                                                                                                             
+ * Tapkick is free software: you can redistribute it and/or modify               
+ * it under the terms of the GNU General Public License as published by         
+ * the Free Software Foundation, either version 2 of the License, or            
+ * (at your option) any later version.                                                                         
+ *                                                                                                             
+ * Tapkick is distributed in the hope that it will be useful,                    
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                
+ * GNU General Public License for more details.                                                                
+ *                                                                                                             
+ * You should have received a copy of the GNU General Public License            
+ * along with Tapkick.  If not, see <http://www.gnu.org/licenses/>.              
+ */                                                                                                            
 
 //--- Includes
-#include <OneWire.h>
+#include "tapkick.h"
+
+#include "OneWire.h"
 #include "SoftwareSerial.h"
 #include "SparkFunSerLCD.h"
-#include <Time.h>
-
-//--- Analog Pin Allocations
-// None
-
-//--- Digital Pin Allocations
-#define TP_PIN_LCD            2
-#define TP_PIN_RELAY          7
-#define TP_PIN_ONEWIRE_TEMP_1 10 // DS18B20 Transistor
-#define TP_PIN_ONEWIRE_TEMP_2 11 // DS18B20 Transistor
-#define TP_PIN_LED            12
-#define TP_PIN_RFID           19 // Serial 1 from ID-20 reader
-#define TP_PIN_FLOW_METER_1   20 // Interrupt 3
-#define TP_PIN_FLOW_METER_2   21 // Interrupt 2
-
-//--- Interrupt Numbers
-#define TP_INTERRUPT_FLOW_METER_1 3 // Pin D20
-#define TP_INTERRUPT_FLOW_METER_2 2 // Pin D21
-
-//--- Tapkick Constants
-#define TAP_DELAY 15
-#define LCD_ROWS 4
-#define LCD_COLS 20
-#define FLOW_CONST 6100
 
 //--- Instantiate Class Objects
 OneWire ds1(TP_PIN_ONEWIRE_TEMP_1);
@@ -123,7 +32,6 @@ SparkFunSerLCD lcd(TP_PIN_LCD, LCD_ROWS, LCD_COLS); // desired pin, rows, cols
 
 //--- Globals
 bool tapState = false;
-time_t startTap = now();
 byte lastcode[6];
 volatile int flow1;
 volatile int flow2;
@@ -133,14 +41,12 @@ float temperature2 = 0.0;
 //--- Tap Functions
 void openTaps() {
   tapState = true;
-  startTap = now();
   digitalWrite(TP_PIN_LED, HIGH);
   digitalWrite(TP_PIN_RELAY, HIGH);
 }
 
 void closeTaps() {
   tapState = false;
-  startTap = now();
   digitalWrite(TP_PIN_LED, LOW);
   digitalWrite(TP_PIN_RELAY, LOW);
 }
@@ -312,11 +218,11 @@ void setup() {
   attachInterrupt(TP_INTERRUPT_FLOW_METER_2, countFlow2, RISING);
 
   //--- Setup Methods
-  closeTaps();
+  lcd.setup();
   setTemps();
   printTemps();
-  lcd.setup();
   lcd.at(3,2,"Welcome to Tapkick");
+  closeTaps();
 }
 
 void loop () {
@@ -324,14 +230,17 @@ void loop () {
   getRFID();
   
   //--- Turn off Taps and print access
-  if(tapState and (now() - startTap >= TAP_DELAY)) {
-    cli(); // Clear Local Interrupts
+  if(tapState) {
 
-    //--- Close the taps
+    //--- Delay then close the taps
+    delay(TAP_DELAY * 1000);
     closeTaps();
 
     //--- Set the temps
     setTemps();
+    lcd.empty();
+    printTemps();
+    lcd.at(3,2,"Rackers Love Beer");
 
     //--- Print out the data for the access period
     for (int i=0; i<5; i++) {
@@ -348,14 +257,7 @@ void loop () {
     Serial.println();
 
     //--- Reset the flow now that you've printed it
-    //resetFlow();
-
-    //--- Print more info if we want
-    lcd.empty();
-    printTemps();
-    lcd.at(3,2,"Rackers Love Beer");
-
-    sei(); // Set Enable Interrupts
+    resetFlow();
   }
 
 }

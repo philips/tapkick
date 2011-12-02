@@ -107,12 +107,20 @@ if __name__ == '__main__':
 
                     # Get the flow and save an access
                     flow[i] = float(data_list[i])
+
+                    # BEGIN TEMPORARY FIX FOR BROKEN FLOW METER
+                    if i == 0:
+                        flow[i] = 0.35488  # 0.35488L is 12oz of beer
+                    else:
+                        flow[i] = 0.0
+                    # END TEMPORARY FIX
+
                     if flow[i] > 0.0:
                         # Create the access object
                         access = Access(user=user)
 
                         # Select the beer based on flow data
-                        beer = Beer.objects.get(tap_number=i + 1)
+                        beer = Beer.objects.get(tap_number=i + 1, active=True)
                         access.amount = flow[i]
                         access.beer = beer
 
