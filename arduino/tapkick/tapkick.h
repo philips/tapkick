@@ -36,7 +36,7 @@
 #define TP_INTERRUPT_FLOW_METER_2 2 // Pin D21
 
 //--- Tapkick Constants
-#define TAP_DELAY  10
+#define TAP_DELAY  20
 #define LCD_ROWS   4
 #define LCD_COLS   20
 #define FLOW_CONST 6100
