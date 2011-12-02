@@ -18,6 +18,9 @@ urlpatterns = patterns('',
     url(r'^get_last/(?P<tap_number>\w+)/$', 'beer.views.get_last'),
     url(r'^get_highest/(?P<tap_number>\w+)/$', 'beer.views.get_highest'),
     url(r'^get_fastest/(?P<tap_number>\w+)/$', 'beer.views.get_fastest'),
+
+    # API
+    (r'^api/1.0/', include('api.urls_1_0')),
 )
 
 urlpatterns += staticfiles_urlpatterns()
