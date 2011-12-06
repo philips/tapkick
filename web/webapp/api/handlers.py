@@ -19,6 +19,6 @@ class BeerHandler(BaseHandler):
               'amount_left', 'abv')
     model = Beer
 
-    def read(self, request, slug):
-        beer = Beer.objects.get(slug=slug)
+    def read(self, request, tap_number):
+        beer = Beer.objects.get(tap_number=tap_number, active=True)
         return beer
