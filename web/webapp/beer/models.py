@@ -13,7 +13,7 @@ TAP_NUMBER_CHOICES = (
 
 class Beer(models.Model):
     name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField()
     beer_type = models.CharField(max_length=3, default='def', choices=BEER_TYPE_CHOICES)
     tap_number = models.IntegerField(choices=TAP_NUMBER_CHOICES)
     active = models.BooleanField(default=True)
