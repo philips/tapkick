@@ -10,5 +10,5 @@ beer_handler = Resource(handler=BeerHandler)
 
 urlpatterns = patterns('',
     url(r'^beers/?$', beers_handler),
-    url(r'^beer/(?P<slug>[^/]+)', beer_handler),
+    url(r'^beer/(?P<tap_number>[^/]+)', beer_handler),
 )
