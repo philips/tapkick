@@ -10,11 +10,20 @@ TAP_NUMBER_CHOICES = (
     (2, 'Tap number 2'),
 )
 
-
-class Beer(models.Model):
+class BeerType(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
     beer_type = models.CharField(max_length=3, default='def', choices=BEER_TYPE_CHOICES)
+    ibu = models.PositiveIntegerField(default=0, help_text="International Bitterness Units (IBU)")
+    abv = models.FloatField(default=0.0, help_text="Alcohol by Volume")
+    
+    def __unicode__(self):
+        return u'%s, %s' % (self.name, self.beer_type)
+
+
+class Keg(models.Model):
+    beer_type = models.ForeignKey(BeerType)
+
     tap_number = models.IntegerField(choices=TAP_NUMBER_CHOICES)
     active = models.BooleanField(default=True)
 
@@ -23,14 +32,12 @@ class Beer(models.Model):
 
     size = models.FloatField("Size (in liters)", default=29.33, choices=KEG_SIZE_CHOICES)
     amount_left = models.FloatField("Amount left (in liters)", blank=True, null=True)
-    ibu = models.PositiveIntegerField(default=0, help_text="International Bitterness Units (IBU)")
-    abv = models.FloatField(default=0.0, help_text="Alcohol by Volume")
 
     class Meta:
         ordering = ('-active', '-start_date')
-
+    
     def __unicode__(self):
-        name = u'%s, %s' % (self.name, self.beer_type)
+        name = u'%s, %s' % (self.beer_type.name, self.beer_type.beer_type)
         if self.active:
             name += u' (#%s active)' % (self.tap_number)
         else:
@@ -53,10 +60,10 @@ class Beer(models.Model):
             self.amount_left = 0.0
 
         if self.active:
-            for beer in Beer.objects.filter(tap_number=self.tap_number).exclude(id=self.id):
-                beer.active = False
-                beer.save()
-        super(Beer, self).save(*args, **kwargs)
+            for keg in Keg.objects.filter(tap_number=self.tap_number).exclude(id=self.id):
+                keg.active = False
+                keg.save()
+        super(Keg, self).save(*args, **kwargs)
 
     def cups_left(self, oz_per_cup=12):
         """
@@ -105,7 +112,7 @@ class Access(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField()
     user = models.ForeignKey(User)
-    beer = models.ForeignKey(Beer)
+    keg = models.ForeignKey(Keg)
     temperature = models.FloatField(blank=True, null=True)
 
     class Meta:
@@ -113,10 +120,10 @@ class Access(models.Model):
         verbose_name_plural = "Accesses"
 
     def __unicode__(self):
-        return u'%s, %s, %s, %s' % (self.time, self.user, self.beer, self.amount)
+        return u'%s, %s, %s, %s' % (self.time, self.user, self.keg, self.amount)
 
     def save(self):
-        b = self.beer
-        b.amount_left -= self.amount
-        b.save()
+        k = self.keg
+        k.amount_left -= self.amount
+        k.save()
         super(Access, self).save()

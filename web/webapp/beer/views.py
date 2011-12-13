@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Sum
-from beer.models import User, Beer, Access
+from beer.models import User, Keg, BeerType, Access
 from beer.forms import SearchForm, UserForm
 
 def search(request):
@@ -59,12 +59,12 @@ def user_detail(request, rfid_id):
 
 
 def front_page(request):
-    tap1_beer, c1 = Beer.objects.get_or_create(tap_number=1, active=True)
+    tap1_beer, c1 = Keg.objects.get_or_create(tap_number=1, active=True)
     if c1:
         tap1_beer.name = "PBR"
         tap1_beer.slug = "pbr"
         tap1_beer.save()
-    tap2_beer, c2 = Beer.objects.get_or_create(tap_number=2, active=True)
+    tap2_beer, c2 = Keg.objects.get_or_create(tap_number=2, active=True)
     if c2:
         tap2_beer.name = "PBR"
         tap2_beer.slug = "pbr"
@@ -73,24 +73,24 @@ def front_page(request):
     last_to_drink1 = None
     last_to_drink2 = None
 
-    drinker_list_tap1 = Access.objects.filter(beer=tap1_beer).order_by('-time')
+    drinker_list_tap1 = Access.objects.filter(keg=tap1_beer).order_by('-time')
     if drinker_list_tap1:
         last_to_drink1 = drinker_list_tap1[0]
-    drinker_list_tap2 = Access.objects.filter(beer=tap2_beer).order_by('-time')
+    drinker_list_tap2 = Access.objects.filter(keg=tap2_beer).order_by('-time')
     if drinker_list_tap2:
         last_to_drink2 = drinker_list_tap2[0]
 
-    user_amount1 = Access.objects.filter(beer=tap1_beer).values('user',
+    user_amount1 = Access.objects.filter(keg=tap1_beer).values('user',
         'user__name', 'user__email').order_by('user').annotate(total=Sum('amount')).order_by('-total')
-    user_amount2 = Access.objects.filter(beer=tap2_beer).values('user',
+    user_amount2 = Access.objects.filter(keg=tap2_beer).values('user',
         'user__name', 'user__email').order_by('user').annotate(total=Sum('amount')).order_by('-total')
 
     highest_consumption1 = get_highest_consumption(user_amount1)
     highest_consumption2 = get_highest_consumption(user_amount2)
 
-    user_time1 = Access.objects.filter(beer=tap1_beer).values('user',
+    user_time1 = Access.objects.filter(keg=tap1_beer).values('user',
         'user__name', 'user__email', 'time').order_by('user', '-time')
-    user_time2 = Access.objects.filter(beer=tap2_beer).values('user',
+    user_time2 = Access.objects.filter(keg=tap2_beer).values('user',
         'user__name', 'user__email', 'time').order_by('user', '-time')
 
     fastest_beer1 = get_fastest_beer(user_time1)
@@ -168,9 +168,9 @@ def json_response(data, code=200, mimetype='application/json'):
 
 # values, total
 def get_graph(request, tap_number):
-    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
+    tap_beer = get_object_or_404(Keg, tap_number=tap_number, active=True)
     tap_graph = get_graph_array(tap_beer)
-    user_list = Access.objects.filter(beer=tap_beer).values('user').annotate(Count('user')).order_by()
+    user_list = Access.objects.filter(keg=tap_beer).values('user').annotate(Count('user')).order_by()
     result = {
         'values': tap_graph,
         'total': len(user_list)}
@@ -181,7 +181,7 @@ def get_graph(request, tap_number):
 def get_graph_array(beer):
     array = []
     select_data = {"d": "strftime('%%Y-%%m-%%dT%%H:00:00.000', time)"}
-    tap_counts = Access.objects.filter(beer=beer).extra(select=select_data).values('d').annotate(Count('user')).order_by()
+    tap_counts = Access.objects.filter(keg=beer).extra(select=select_data).values('d').annotate(Count('user')).order_by()
     if tap_counts:
         for data in tap_counts:
             for k, v in data.iteritems():
@@ -192,7 +192,7 @@ def get_graph_array(beer):
 
 # level, name, amout_left, age, volume, ibu, abv
 def get_tap(request, tap_number):
-    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
+    tap_beer = get_object_or_404(Keg, tap_number=tap_number, active=True)
     now = datetime.datetime.now()
     age = (now - tap_beer.start_date).days
     if age > -1:
@@ -203,11 +203,11 @@ def get_tap(request, tap_number):
     else:
         age_string = "0 days"
     volume = '%s/%sL' % (tap_beer.amount_left, tap_beer.size)
-    ibus = "%s IBUs" % tap_beer.ibu
-    abv = "%s%%" % tap_beer.abv
+    ibus = "%s IBUs" % tap_beer.beer_type.ibu
+    abv = "%s%%" % tap_beer.beer_type.abv
     result = {
         'level': tap_beer.percent_left(),
-        'name': tap_beer.name,
+        'name': tap_beer.beer_type.name,
         'amountLeft': tap_beer.cups_left(),
         'age': age_string,
         'volume': volume,
@@ -219,8 +219,8 @@ def get_tap(request, tap_number):
 
 # name, time, gravitar_url
 def get_last(request, tap_number):
-    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
-    drinker_list_tap = Access.objects.filter(beer=tap_beer).order_by('-time')
+    tap_beer = get_object_or_404(Keg, tap_number=tap_number, active=True)
+    drinker_list_tap = Access.objects.filter(keg=tap_beer).order_by('-time')
     result = {}
     if drinker_list_tap:
         last_to_drink = drinker_list_tap[0]
@@ -236,8 +236,8 @@ def get_last(request, tap_number):
 
 # name, amount, gravitar_url
 def get_highest(request, tap_number):
-    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
-    users = Access.objects.filter(beer=tap_beer).values('user', 'user__name',
+    tap_beer = get_object_or_404(Keg, tap_number=tap_number, active=True)
+    users = Access.objects.filter(keg=tap_beer).values('user', 'user__name',
         'user__email').order_by('user').annotate(total=Sum('amount')).order_by('-total')
     highest_user = get_highest_consumption(users)
     result = {}
@@ -251,8 +251,8 @@ def get_highest(request, tap_number):
 
 # name, time, gravitar_url
 def get_fastest(request, tap_number):
-    tap_beer = get_object_or_404(Beer, tap_number=tap_number, active=True)
-    user_time = Access.objects.filter(beer=tap_beer).values('user',
+    tap_beer = get_object_or_404(Keg, tap_number=tap_number, active=True)
+    user_time = Access.objects.filter(keg=tap_beer).values('user',
         'user__name', 'user__email', 'time').order_by('user', '-time')
     fastest_beer = get_fastest_beer(user_time)
 

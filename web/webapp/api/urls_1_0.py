@@ -2,13 +2,13 @@ from django.conf.urls.defaults import *
 from piston.resource import Resource
 from piston.authentication import HttpBasicAuthentication
 
-from api.handlers import BeersHandler
-from api.handlers import BeerHandler
+from api.handlers import KegsHandler
+from api.handlers import KegHandler
 
-beers_handler = Resource(handler=BeersHandler)
-beer_handler = Resource(handler=BeerHandler)
+kegs_handler = Resource(handler=KegsHandler)
+keg_handler = Resource(handler=KegHandler)
 
 urlpatterns = patterns('',
-    url(r'^beers/?$', beers_handler),
-    url(r'^beer/(?P<tap_number>[^/]+)', beer_handler),
+    url(r'^kegs/?$', kegs_handler),
+    url(r'^keg/(?P<tap_number>[^/]+)', keg_handler),
 )

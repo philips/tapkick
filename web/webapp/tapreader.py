@@ -9,7 +9,7 @@ import serial
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-from beer.models import Beer, Access, User
+from beer.models import Keg, BeerType, Access, User
 
 
 def scanports():
@@ -119,10 +119,10 @@ if __name__ == '__main__':
                         # Create the access object
                         access = Access(user=user)
 
-                        # Select the beer based on flow data
-                        beer = Beer.objects.get(tap_number=i + 1, active=True)
+                        # Select the keg based on flow data
+                        keg = Keg.objects.get(tap_number=i + 1, active=True)
                         access.amount = flow[i]
-                        access.beer = beer
+                        access.keg = keg
 
                         # Record access in the database
                         access.save()

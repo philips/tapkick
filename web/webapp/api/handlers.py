@@ -1,24 +1,22 @@
 from piston.handler import BaseHandler
 
-from beer.models import Beer
+from beer.models import Keg, BeerType
 
-class BeersHandler(BaseHandler):
+class KegsHandler(BaseHandler):
     allowed_methods = ('GET')
-    fields = ('name', 'slug', 'beer_type', 'tap_number', 'active', 'size',
-              'amount_left', 'abv')
-    model = Beer
+    fields = ('beer_type', 'tap_number', 'active', 'size', 'amount_left')
+    model = Keg
 
     def read(self, request):
-        beers = Beer.objects.filter(active=True)
-        return beers
+        kegs = Keg.objects.filter(active=True)
+        return kegs
 
 
-class BeerHandler(BaseHandler):
+class KegHandler(BaseHandler):
     allowed_methods = ('GET')
-    fields = ('name', 'slug', 'beer_type', 'tap_number', 'active', 'size',
-              'amount_left', 'abv')
-    model = Beer
+    fields = ('beer_type', 'tap_number', 'active', 'size', 'amount_left')
+    model = Keg
 
     def read(self, request, tap_number):
-        beer = Beer.objects.get(tap_number=tap_number, active=True)
-        return beer
+        keg = Keg.objects.get(tap_number=tap_number, active=True)
+        return keg
