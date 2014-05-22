@@ -7,7 +7,7 @@
 <div id="one" class="tap">
 	<div class="box">
 		<div class="logo">
-            <img src="{{ STATIC_URL }}img/logo/{{tap1_beer.slug}}.png">
+            <img src="{{ STATIC_URL }}img/logo/{{tap1_beer.beer_type.slug}}.png">
 		</div>
 		<div class="tank">
 			<div class="tank-shell">&nbsp;</div>
@@ -15,7 +15,7 @@
 		</div>
 		<div class="meta">
             <img src="{{ STATIC_URL }}img/one.png">
-            <h2>{{tap1_beer.name}}</h2>
+            <h2>{{tap1_beer.beer_type.name}}</h2>
             <h4>{{tap1_beer.cups_left}} beers left</h4>
 			<div class="item age">
 				<div class="item-key">Age:</div>
@@ -27,11 +27,11 @@
 			</div>
 			<div class="item ibu">
 				<div class="item-key">IBU:</div>
-                <div class="item-value">{{tap1_beer.ibu}}</div>
+                <div class="item-value">{{tap1_beer.beer_type.ibu}}</div>
 			</div>
 			<div class="item abv">
 				<div class="item-key">ABV:</div>
-                <div class="item-value">{{tap1_beer.abv}}%</div>
+                <div class="item-value">{{tap1_beer.beer_type.abv}}%</div>
 			</div>
 		</div>
 	</div>
@@ -65,7 +65,7 @@
 <div id="two" class="tap">
 	<div class="box">
 		<div class="logo">
-            <img src="{{ STATIC_URL }}img/logo/{{tap2_beer.slug}}.png">
+            <img src="{{ STATIC_URL }}img/logo/{{tap2_beer.beer_type.slug}}.png">
 		</div>
 		<div class="tank">
 			<div class="tank-shell">&nbsp;</div>
@@ -73,7 +73,7 @@
 		</div>
 		<div class="meta">
 			<img src="{{ STATIC_URL }}img/two.png">
-            <h2>{{tap2_beer.name}}</h2>
+            <h2>{{tap2_beer.beer_type.name}}</h2>
             <h4>{{tap2_beer.cups_left}} beers left</h4>
 			<div class="item age">
 				<div class="item-key">Age:</div>
@@ -85,11 +85,11 @@
 			</div>
 			<div class="item ibu">
 				<div class="item-key">IBU:</div>
-                <div class="item-value">{{tap2_beer.ibu}}</div>
+                <div class="item-value">{{tap2_beer.beer_type.ibu}}</div>
 			</div>
 			<div class="item abv">
 				<div class="item-key">ABV:</div>
-                <div class="item-value">{{tap2_beer.abv}}%</div>
+                <div class="item-value">{{tap2_beer.beer_type.abv}}%</div>
 			</div>
 		</div>
 	</div>
